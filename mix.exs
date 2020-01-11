@@ -1,28 +1,57 @@
-defmodule ItkCommon.MixProject do
+defmodule ITKCommon.MixProject do
   use Mix.Project
+
+  @project_url "https://github.com/inside-track/itk_common"
+  @version "0.0.1"
 
   def project do
     [
       app: :itk_common,
-      version: "0.1.0",
-      elixir: "~> 1.9",
+      version: @version,
+      elixir: "~> 1.8",
+      description: "Provides common logic for all ITK elixir projects",
+      source_url: @project_url,
+      homepage_url: @project_url,
+      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      package: package(),
+      docs: [main: "readme", extras: ["README.md"]],
+      deps: deps(),
+      dialyzer: [
+        plt_add_apps: [:mix],
+        plt_add_deps: true
+      ]
     ]
   end
 
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {ITKCommon, []}
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      {:jason, "~> 1.0"},
+      {:httpoison, "~> 1.0"},
+      {:uuid, "~> 1.1"},
+      {:poolboy, "~> 1.5"},
+      {:redix, "~> 0.9.0"},
+      {:ex_doc, "~> 0.19.0", only: :dev},
+      {:credo, git: "https://github.com/rrrene/credo.git", only: [:dev, :test]},
+      {:dialyxir, "~> 0.5", only: :dev, runtime: false}
+    ]
+  end
+
+  defp package do
+    [
+      maintainers: ["Grady Griffin"],
+      links: %{
+        "GitHub" => @project_url
+      }
     ]
   end
 end
