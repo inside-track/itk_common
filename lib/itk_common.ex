@@ -39,7 +39,7 @@ defmodule ITKCommon do
   defp children do
     []
     |> append(:redis, ITKCommon.Redis.Pool)
-    |> Enum.reverse
+    |> Enum.reverse()
   end
 
   defp append(list, key, mod) do

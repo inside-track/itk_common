@@ -4,6 +4,26 @@ defmodule ITKCommon.Utils.Access do
   """
 
   @doc """
+  Performs a `deep_get/3` against the app's configuration.
+  """
+  @spec config_deep_get(app :: atom, keys :: list, default :: any) :: any
+  def config_deep_get(app, keys, default \\ nil) do
+    app
+    |> Application.get_all_env()
+    |> deep_get(keys, default)
+  end
+
+  @doc """
+  Performs a `deep_fetch!/2` against the app's configuration.
+  """
+  @spec config_deep_fetch!(app :: atom, keys :: list) :: any
+  def config_deep_fetch!(app, keys) do
+    app
+    |> Application.get_all_env()
+    |> deep_fetch!(keys)
+  end
+
+  @doc """
   Similar to Kernel.get_in/2, but can safely navigate through lists. Returns
   the value if found, or returns the default value if not found.
   """

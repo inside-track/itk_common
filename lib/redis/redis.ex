@@ -8,14 +8,13 @@ defmodule ITKCommon.Redis do
   @doc """
   Gets a value from Redis with the given key.
   """
-  # @spec get(key :: String.t()) :: response
   def get(key) when is_binary(key) do
     command(["GET", key])
   end
 
   @doc """
-  Gets multiple value provided by keys or matching pattern
-  This should be used sparingly
+  Gets multiple value provided by keys
+  By matching pattern should be used sparingly
   """
   def mget(keys) when is_list(keys) do
     command(["MGET" | keys])
@@ -39,7 +38,6 @@ defmodule ITKCommon.Redis do
   @doc """
   Gets the value associated with field in the hash stored at key.
   """
-  # @spec hget(key :: String.t(), field :: String.t()) :: response
   def hget(key, field) when is_binary(key) and is_binary(field) do
     command(["HGET", key, field])
   end
@@ -51,7 +49,6 @@ defmodule ITKCommon.Redis do
   @doc """
   Gets a list from Redis with the given key.
   """
-  # @spec get_list(key :: String.t()) :: response
   def get_list(key) when is_binary(key) do
     command(["LRANGE", key, 0, -1])
   end
@@ -59,15 +56,27 @@ defmodule ITKCommon.Redis do
   @doc """
   Sets a value in Redis with the given key.
   """
-  # @spec set(key :: String.t(), value :: String.t()) :: response
   def set(key, value) when is_binary(key) and is_binary(value) do
     command(["SET", key, value])
   end
 
   @doc """
+  Sets a value in Redis with the given key that expires.
+  """
+  def set(key, value, ttl) when is_binary(key) and is_binary(value) and is_integer(ttl) do
+    command(["SET", key, value, "EX", ttl])
+  end
+
+  @doc """
+  Sets a value in Redis with the given key if given key does not exist.
+  """
+  def setnx(key, value) when is_binary(key) and is_binary(value) do
+    command(["SETNX", key, value])
+  end
+
+  @doc """
   Sets field in the hash stored at key to value.
   """
-  # @spec hset(key :: String.t(), field :: String.t(), value :: String.t()) :: response
   def hset(key, field, value) when is_binary(key) and is_binary(field) and is_binary(value) do
     command(["HSET", key, field, value])
   end
@@ -75,23 +84,13 @@ defmodule ITKCommon.Redis do
   @doc """
   Sets field in the hash stored at key to value, only if field does not yet exist.
   """
-  # @spec hsetnx(key :: String.t(), field :: String.t(), value :: String.t()) :: response
   def hsetnx(key, field, value) when is_binary(key) and is_binary(field) and is_binary(value) do
     command(["HSETNX", key, field, value])
   end
 
   @doc """
-  Sets a value in Redis with the given key that expires.
-  """
-  # @spec set(key :: String.t(), value :: String.t(), ttl :: integer) :: response
-  def set(key, value, ttl) when is_binary(key) and is_binary(value) and is_integer(ttl) do
-    command(["SET", key, value, "EX", ttl])
-  end
-
-  @doc """
   Prepends a value on a list in Redis with the given key.
   """
-  # @spec prepend(key :: String.t(), value :: String.t()) :: response
   def prepend(key, value) when is_binary(key) and is_binary(value) do
     command(["LPUSH", key, value])
   end
@@ -111,7 +110,6 @@ defmodule ITKCommon.Redis do
   @doc """
   Sets a time-to-live on the given key. After the given time has elapsed the key will be deleted.
   """
-  # @spec expire(key :: String.t(), ttl :: integer) :: response
   def expire(key, ttl) when is_binary(key) and is_integer(ttl) do
     command(["EXPIRE", key, ttl])
   end
@@ -119,7 +117,6 @@ defmodule ITKCommon.Redis do
   @doc """
   Deletes a key from Redis.
   """
-  # @spec delete(key :: String.t()) :: response
   def delete(key) when is_binary(key) do
     command(["DEL", key])
   end
@@ -127,7 +124,6 @@ defmodule ITKCommon.Redis do
   @doc """
   Delete all the keys of all the existing databases.
   """
-  # @spec flushall() :: response
   def flushall do
     command(["FLUSHALL"])
   end
@@ -135,7 +131,6 @@ defmodule ITKCommon.Redis do
   @doc """
   Checks if key exists
   """
-  # @spec exists() :: response
   def exists(key) do
     case command(["EXISTS", key]) do
       {:ok, 0} -> false
@@ -146,13 +141,11 @@ defmodule ITKCommon.Redis do
   @doc """
   alias for exists/1
   """
-  # @spec exists() :: response
   def exists?(key), do: exists(key)
 
   @doc """
   Sends a command to Redis.
   """
-  # @spec command(command :: String.t()) :: response
   def command(command) when is_list(command) do
     :poolboy.transaction(:redis_pool, &Redix.command(&1, command))
   end
