@@ -11,11 +11,6 @@ defmodule ITKCommon.RedisCore do
         command(["GET", key])
       end
 
-      def g(key) when is_binary(key) do
-        command(["GET", key])
-      end
-
-
       @doc """
       Gets multiple value provided by keys
       By matching pattern should be used sparingly
