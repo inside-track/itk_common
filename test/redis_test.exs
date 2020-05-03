@@ -35,6 +35,26 @@ defmodule ITKCommon.RedisTest do
     end
   end
 
+  describe "mget_as_map/1" do
+    test "Get multiple values from redis" do
+      keys = [key1, key2] = [random_key(), random_key()]
+
+      Redis.set(key1, "val1")
+      Redis.set(key2, "val2")
+
+      assert Redis.mget_as_map(keys) == {:ok, %{key1 => "val1", key2 => "val2"}}
+      del(keys)
+    end
+
+    test "Get values for non existing keys" do
+      keys = [key1, key2] = [random_key(), random_key()]
+
+      assert Redis.mget_as_map(keys) == {:ok, %{key1 => nil, key2 => nil}}
+
+      del(keys)
+    end
+  end
+
   describe "hget/2" do
     test "Get field value from redis" do
       key = random_key()
@@ -73,6 +93,22 @@ defmodule ITKCommon.RedisTest do
       key = random_key()
       assert Redis.exists?(key) == false
       del(key)
+    end
+  end
+
+  describe "mset/1" do
+    test "set multiple keys" do
+      keys = [key1, key2] = [random_key(), random_key()]
+
+      map = %{
+        key1 => "val1",
+        key2 => "val2"
+      }
+
+      Redis.mset(map)
+      assert {:ok, map} = Redis.mget_as_map(keys)
+
+      del(keys)
     end
   end
 

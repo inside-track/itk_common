@@ -22,10 +22,54 @@ defmodule ITKCommon.Redis do
 
   def mget(pattern) when is_binary(pattern) do
     case keys(pattern) do
-      {:ok, []} -> []
-      {:ok, keys} -> mget(keys)
+      {:ok, []} -> 
+        {:ok, []}
+      {:ok, keys} -> 
+        mget(keys)
+      other -> 
+        other
     end
   end
+
+  @doc """
+  Gets multiple values provided by keys
+  Returns a Map of key value pairs
+  By matching pattern should be used sparingly
+  """
+  def mget_as_map(keys) do
+    case mget(keys) do 
+      {:ok, []} ->
+        {:ok, %{}}
+      {:ok, list} ->
+        map = keys
+        |> Enum.zip(list)
+        |> Enum.into(%{})
+      {:ok, map}
+      other -> 
+        other
+    end
+  end
+
+  @doc """
+  Set multiple values provided by key => value Map
+  """
+  def mset(map) when is_map(map) do
+    args = map
+    |> Enum.map(fn {key,value} ->
+      [key, value]
+    end)
+    |> List.flatten()
+
+    command(["MSET" | args])
+  end
+
+  @doc """
+  Get a value and set in one atomic operation
+  """
+  def getset(key, value) when is_binary(key) and is_binary(value) do
+    command(["GETSET", key, value])
+  end
+
 
   @doc """
   Gets multiple keys provided by matching pattern
