@@ -1,6 +1,6 @@
 defmodule ITKCommon.Utils.AccessTest do
   use ExUnit.Case
-  
+
   import ITKCommon.Utils.Access
 
   setup_all do
