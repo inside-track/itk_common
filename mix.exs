@@ -2,7 +2,7 @@ defmodule ITKCommon.MixProject do
   use Mix.Project
 
   @project_url "https://github.com/inside-track/itk_common"
-  @version "0.0.1"
+  @version "0.0.2"
 
   def project do
     [
