@@ -1,4 +1,4 @@
-defmodule ITKCommon.RedisCore do
+defmodule ITKCommon.Redis.Core do
   @moduledoc """
   Core module to extend capabilities for interacting with Redis.
   """
