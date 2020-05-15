@@ -2,7 +2,7 @@ defmodule ITKCommon.Redis.Core do
   @moduledoc """
   Core module to extend capabilities for interacting with Redis.
   """
-  defmacro __using__([]) do
+  defmacro __using__(_) do
     quote do
       @doc """
       Gets a value from Redis with the given key.
@@ -26,9 +26,6 @@ defmodule ITKCommon.Redis.Core do
 
           {:ok, keys} ->
             mget(keys)
-
-          other ->
-            other
         end
       end
 
