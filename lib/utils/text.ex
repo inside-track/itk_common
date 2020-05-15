@@ -64,4 +64,17 @@ defmodule ITKCommon.Utils.Text do
       word
     end
   end
+
+  def format_zip(zip) do
+    cond do
+      String.length(zip) > 4 ->
+        String.slice(zip, 0..4)
+
+      String.length(zip) < 5 ->
+        String.pad_leading(zip, 5, "0")
+
+      true ->
+        nil
+    end
+  end
 end
