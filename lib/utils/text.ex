@@ -39,7 +39,7 @@ defmodule ITKCommon.Utils.Text do
   def is_uuid?(_), do: false
 
   def test do
-    "Hello World"
+    "Hello World Again"
   end
 
   def iso8601_now do
