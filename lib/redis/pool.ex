@@ -11,7 +11,7 @@ defmodule ITKCommon.Redis.Pool do
 
   @spec init(list) :: no_return
   def init([]) do
-    config = Application.get_env(:itk_common, :redis, %{})
+    config = Application.get_env(:itk_common, :redis, [])
     pool_size = Keyword.get(config, :pool_size, 10)
     max_overflow = Keyword.get(config, :max_overflow, 5)
     host = Keyword.fetch!(config, :host)
