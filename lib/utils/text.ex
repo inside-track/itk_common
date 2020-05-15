@@ -38,6 +38,10 @@ defmodule ITKCommon.Utils.Text do
 
   def is_uuid?(_), do: false
 
+  def test do
+    "Hello World"
+  end
+
   def iso8601_now do
     iso8601_now(milliseconds: 0)
   end
