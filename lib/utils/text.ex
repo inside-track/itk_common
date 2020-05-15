@@ -31,18 +31,9 @@ defmodule ITKCommon.Utils.Text do
   end
 
   def is_uuid?(charlist) when is_list(charlist) do
-    cond do
-      Enum.count(charlist) < 36 ->
-        false
-
-      Enum.any?(&(&1 not in 45..102)) ->
-        false
-
-      true ->
-        charlist
-        |> to_string
-        |> is_uuid?
-    end
+    charlist
+    |> to_string
+    |> is_uuid?
   end
 
   def is_uuid?(_), do: false
