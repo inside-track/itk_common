@@ -35,15 +35,16 @@ defmodule ITKCommon.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:jason, "~> 1.0"},
-      {:httpoison, "~> 1.0"},
-      {:uuid, "~> 1.1"},
+      # {:jason, "~> 1.0"},
+      # {:httpoison, "~> 1.0"},
+      # {:uuid, "~> 1.1"},
+      {:timex, "~> 3.1"},
       {:poolboy, "~> 1.5"},
       {:redix, "~> 0.9.0"},
       {:ex_doc, "~> 0.19.0", only: :dev},
       {:credo, git: "https://github.com/rrrene/credo.git", only: [:dev, :test]},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
-      {:timex, "~> 3.1"}
+      {:itk_queue, "~> 0.11.2"}
     ]
   end
 
