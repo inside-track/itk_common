@@ -10,15 +10,23 @@ defmodule ITKCommon.ScheduledTasks.Publisher do
         "payload" => payload,
         "publish_at" => publish_at
       }
-      |> add_request_uuid(options)
+      |> add_uuid(options)
+      |> add_headers(options)
 
     ITKQueue.publish("scheduled_task.create", data)
   end
 
-  defp add_request_uuid(data, request_uuid: request_uuid) do
+  defp add_headers(data, headers: headers) do
     data
-    |> Map.put("request_uuid", request_uuid)
+    |> Map.put("headers", headers)
   end
 
-  defp add_request_uuid(data, _), do: data
+  defp add_headers(data, _), do: data
+
+  defp add_uuid(data, uuid: uuid) do
+    data
+    |> Map.put("uuid", uuid)
+  end
+
+  defp add_uuid(data, _), do: data
 end
