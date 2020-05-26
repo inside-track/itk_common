@@ -6,11 +6,15 @@ defmodule ITKCommon do
 
   alias ITKCommon.ScheduledTasks.Publisher
 
-  defdelegate schedule_task(routing_key, payload, publish_at), to: Publisher, as: :publish
+  defdelegate schedule_task(routing_key, payload, publish_at), to: Publisher, as: :publish_create
 
   defdelegate schedule_task(routing_key, payload, publish_at, options),
     to: Publisher,
-    as: :publish
+    as: :publish_create
+
+  defdelegate unschedule_task(routing_key, identifier),
+    to: Publisher,
+    as: :publish_delete
 
   @doc false
   def start(_type, _args) do
