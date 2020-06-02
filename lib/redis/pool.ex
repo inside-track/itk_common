@@ -20,7 +20,8 @@ defmodule ITKCommon.Redis.Pool do
       name: {:local, :redis_pool},
       worker_module: Redix,
       size: pool_size,
-      max_overflow: max_overflow
+      max_overflow: max_overflow,
+      strategy: :fifo
     ]
 
     children = [
