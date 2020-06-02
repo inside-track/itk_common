@@ -4,6 +4,18 @@ defmodule ITKCommon do
   """
   use Application
 
+  alias ITKCommon.ScheduledTasks.Publisher
+
+  defdelegate schedule_task(routing_key, payload, publish_at), to: Publisher, as: :publish_create
+
+  defdelegate schedule_task(routing_key, payload, publish_at, options),
+    to: Publisher,
+    as: :publish_create
+
+  defdelegate unschedule_task(routing_key, identifier),
+    to: Publisher,
+    as: :publish_delete
+
   @doc false
   def start(_type, _args) do
     opts = [strategy: :rest_for_one, name: ITKCommon.Supervisor]
