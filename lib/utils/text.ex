@@ -7,6 +7,9 @@ defmodule ITKCommon.Utils.Text do
   Sanitizes text.
   Removes invalid unicode characters.
   """
+
+  @uuid_format ~r/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/
+
   @spec sanitize(text :: String.t()) :: String.t()
   def sanitize(text) do
     text |> IO.iodata_to_binary() |> String.replace("\u0000", "")
@@ -26,8 +29,7 @@ defmodule ITKCommon.Utils.Text do
   end
 
   def is_uuid?(text) when is_binary(text) do
-    ~r/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/
-    |> Regex.match?(text)
+    Regex.match?(@uuid_format, text)
   end
 
   def is_uuid?(charlist) when is_list(charlist) do
