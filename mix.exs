@@ -44,7 +44,7 @@ defmodule ITKCommon.MixProject do
       {:ex_doc, "~> 0.19.0", only: :dev},
       {:credo, git: "https://github.com/rrrene/credo.git", only: [:dev, :test]},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
-      {:itk_queue, "~> 0.11.6"}
+      {:itk_queue, "~> 0.11.7"}
     ]
   end
 
