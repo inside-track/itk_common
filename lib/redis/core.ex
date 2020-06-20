@@ -267,6 +267,10 @@ defmodule ITKCommon.Redis.Core do
     end
   end
 
+  def scan(pattern) do
+    scan(pattern, [], "0")
+  end
+
   defp push(cmd, key, list) when is_list(list) do
     [cmd, key]
     |> List.flatten(list)
@@ -275,10 +279,6 @@ defmodule ITKCommon.Redis.Core do
 
   defp push(cmd, key, val) do
     push(cmd, key, [val])
-  end
-
-  defp scan(pattern) do
-    scan(pattern, [], "0")
   end
 
   defp scan(pattern, prev_data, prev_cursor) do
