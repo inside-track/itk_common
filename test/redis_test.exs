@@ -2,7 +2,7 @@ defmodule ITKCommon.RedisTest do
   use ExUnit.Case
 
   alias ITKCommon.Redis
-  #alias ITKCommon.Redis.Core, as: Redis
+  # alias ITKCommon.Redis.Core, as: Redis
 
   describe "get/1" do
     test "Get value from redis" do
