@@ -263,7 +263,9 @@ defmodule ITKCommon.Redis.Core do
     |> case do
       {:ok, ["OK" | tl]} ->
         {:ok, List.first(tl)}
-      error -> error
+
+      error ->
+        error
     end
   end
 
