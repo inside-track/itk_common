@@ -202,9 +202,8 @@ defmodule ITKCommon.IpLocator do
   end
 
   defp from_range(json, int) when is_binary(json) do
-    with {:ok, range} <- Jason.decode(json) do
-      from_range(range, int)
-    else
+    case Jason.decode(json) do
+      {:ok, range} -> from_range(range, int)
       _ -> {:error, :invalid_data}
     end
   end

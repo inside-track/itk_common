@@ -21,5 +21,4 @@ config :itk_queue,
 
 config :itk_queue, ITK.QueueMiddleware.TransactionMetadata, enabled: false
 
-config :itk_common, :ip_locator,
-  data_directory: "test/support"
+config :itk_common, :ip_locator, data_directory: "test/support"
