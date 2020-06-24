@@ -2,6 +2,7 @@ defmodule ITKCommon.RedisTest do
   use ExUnit.Case
 
   alias ITKCommon.Redis
+  #alias ITKCommon.Redis.Core, as: Redis
 
   describe "get/1" do
     test "Get value from redis" do
@@ -109,6 +110,190 @@ defmodule ITKCommon.RedisTest do
       assert {:ok, map} = Redis.mget_as_map(keys)
 
       del(keys)
+    end
+  end
+
+  describe "prepend/2" do
+    test "add a single item to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.prepend(key, "a")
+      assert {:ok, ["a"]} = Redis.get_list(key)
+      Redis.prepend(key, "b")
+      assert {:ok, ["b", "a"]} = Redis.get_list(key)
+
+      del(key)
+    end
+
+    test "add many items to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.prepend(key, ["a", "b"])
+      assert {:ok, ["b", "a"]} = Redis.get_list(key)
+
+      del(key)
+    end
+  end
+
+  describe "append/2" do
+    test "add a single item to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.append(key, "a")
+      assert {:ok, ["a"]} = Redis.get_list(key)
+      Redis.append(key, "b")
+      assert {:ok, ["a", "b"]} = Redis.get_list(key)
+
+      del(key)
+    end
+
+    test "add many items to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.append(key, ["a", "b"])
+      assert {:ok, ["a", "b"]} = Redis.get_list(key)
+
+      del(key)
+    end
+  end
+
+  describe "lpush/2" do
+    test "add a single item to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.lpush(key, "a")
+      assert {:ok, ["a"]} = Redis.get_list(key)
+      Redis.lpush(key, "b")
+      assert {:ok, ["b", "a"]} = Redis.get_list(key)
+
+      del(key)
+    end
+
+    test "add many items to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.lpush(key, ["a", "b"])
+      assert {:ok, ["b", "a"]} = Redis.get_list(key)
+
+      del(key)
+    end
+  end
+
+  describe "lpushx/2" do
+    test "add a single item to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.lpush(key, "a")
+      assert {:ok, ["a"]} = Redis.get_list(key)
+      Redis.lpushx(key, "b")
+      assert {:ok, ["b", "a"]} = Redis.get_list(key)
+
+      del(key)
+    end
+
+    test "add many items to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.lpush(key, "a")
+      Redis.lpushx(key, ["b", "c"])
+      assert {:ok, ["c", "b", "a"]} = Redis.get_list(key)
+
+      del(key)
+    end
+
+    test "noop when key does not exist" do
+      key = random_key()
+
+      Redis.lpushx(key, "a")
+      assert {:ok, []} = Redis.get_list(key)
+
+      del(key)
+    end
+  end
+
+  describe "rpush/2" do
+    test "add a single item to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.rpush(key, "a")
+      assert {:ok, ["a"]} = Redis.get_list(key)
+      Redis.rpush(key, "b")
+      assert {:ok, ["a", "b"]} = Redis.get_list(key)
+
+      del(key)
+    end
+
+    test "add many items to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.rpush(key, ["a", "b"])
+      assert {:ok, ["a", "b"]} = Redis.get_list(key)
+
+      del(key)
+    end
+  end
+
+  describe "rpushx/2" do
+    test "add a single item to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+      Redis.rpush(key, "a")
+      Redis.rpushx(key, "b")
+      assert {:ok, ["a", "b"]} = Redis.get_list(key)
+
+      del(key)
+    end
+
+    test "add many items to a list" do
+      key = random_key()
+
+      assert {:ok, []} = Redis.get_list(key)
+
+      Redis.rpush(key, ["a"])
+      Redis.rpushx(key, ["b", "c"])
+      assert {:ok, ["a", "b", "c"]} = Redis.get_list(key)
+
+      del(key)
+    end
+
+    test "noop when key does not exist" do
+      key = random_key()
+
+      Redis.rpushx(key, "a")
+      assert {:ok, []} = Redis.get_list(key)
+
+      del(key)
+    end
+  end
+
+  describe "multi/1" do
+    test "performs many commands" do
+      key = random_key()
+      key2 = random_key()
+      Redis.multi([["SET", key, "a"], ["SET", key2, "b"]])
+
+      assert {:ok, "a"} == Redis.get(key)
+      assert {:ok, "b"} == Redis.get(key2)
+
+      del([key, key2])
+    end
+
+    test "returns result of last command" do
+      key = random_key()
+      assert {:ok, "a"} == Redis.multi([["SET", key, "a"], ["GET", key], ["GET", "v"]])
+
+      del(key)
     end
   end
 
