@@ -5,30 +5,21 @@ defmodule ITKCommon.Thread do
 
   @key :itk_common_thread
 
-  def get(key) do
+  @spec get(key :: String.t()) :: any
+  def get(key) when is_binary(key) do
     Map.get(to_map(), key)
   end
 
-  def put(key, val) do
+  @spec put(key :: String.t(), val :: any) :: map
+  def put(key, val) when is_binary(key) do
     new_map = Map.put(to_map(), key, val)
     Process.put(@key, new_map)
     new_map
   end
 
+  @spec put_new(key :: String.t(), val :: any) :: map
   def put_new(key, val) do
     new_map = Map.put_new(to_map(), key, val)
-    Process.put(@key, new_map)
-    new_map
-  end
-
-  def merge(map) do
-    new_map = Map.merge(to_map(), map)
-    Process.put(@key, new_map)
-    new_map
-  end
-
-  def merge_new(map) do
-    new_map = Map.merge(map, to_map())
     Process.put(@key, new_map)
     new_map
   end
