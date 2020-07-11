@@ -17,6 +17,10 @@ defmodule ITKCommon.Redis.Core do
       defdelegate getset(key, value), to: ITKCommon.Redis.Core
       defdelegate hdel(key, field), to: ITKCommon.Redis.Core
       defdelegate hget(key, field), to: ITKCommon.Redis.Core
+      defdelegate hmget(key, fields), to: ITKCommon.Redis.Core
+      defdelegate hmget_as_map(key, fields), to: ITKCommon.Redis.Core
+      defdelegate hmset(key, map), to: ITKCommon.Redis.Core
+      defdelegate hset(key, map), to: ITKCommon.Redis.Core
       defdelegate hset(key, field, value), to: ITKCommon.Redis.Core
       defdelegate hsetnx(key, field, value), to: ITKCommon.Redis.Core
       defdelegate keys(pattern), to: ITKCommon.Redis.Core
@@ -66,15 +70,10 @@ defmodule ITKCommon.Redis.Core do
   @doc """
   Set multiple values provided by key => value Map
   """
-  def mset(map) do
-    args =
-      map
-      |> Enum.map(fn {key, value} ->
-        [key, value]
-      end)
-      |> List.flatten()
-
-    command(["MSET" | args])
+  def mset(map) when is_map(map) do
+    "MSET"
+    |> prepare_mset_args(map)
+    |> command()
   end
 
   @doc """
@@ -95,8 +94,24 @@ defmodule ITKCommon.Redis.Core do
   @doc """
   Gets the value associated with field in the hash stored at key.
   """
+  def hget(key, fields) when is_list(fields) do
+    hmget(key, fields)
+  end
+
   def hget(key, field) do
     command(["HGET", key, field])
+  end
+
+  def hmget(key, fields) do
+    ["HMGET", key]
+    |> Enum.concat(fields)
+    |> command()
+  end
+
+  def hmget_as_map(key, fields) do
+    key
+    |> hmget(fields)
+    |> prepare_mget(fields)
   end
 
   def hdel(key, field) do
@@ -124,11 +139,21 @@ defmodule ITKCommon.Redis.Core do
     command(["SETNX", key, value])
   end
 
+  def hset(key, map) when is_map(map) do
+    hmset(key, map)
+  end
+
   @doc """
   Sets field in the hash stored at key to value.
   """
   def hset(key, field, value) do
     command(["HSET", key, field, value])
+  end
+
+  def hmset(key, map) do
+    ["HMSET", key]
+    |> prepare_mset_args(map)
+    |> command()
   end
 
   @doc """
@@ -204,21 +229,9 @@ defmodule ITKCommon.Redis.Core do
   By matching pattern should be used sparingly
   """
   def mget_as_map(keys) do
-    case mget(keys) do
-      {:ok, []} ->
-        {:ok, %{}}
-
-      {:ok, list} ->
-        map =
-          keys
-          |> Enum.zip(list)
-          |> Enum.into(%{})
-
-        {:ok, map}
-
-      other ->
-        other
-    end
+    keys
+    |> mget()
+    |> prepare_mget(keys)
   end
 
   @doc """
@@ -263,8 +276,14 @@ defmodule ITKCommon.Redis.Core do
     |> case do
       {:ok, ["OK" | tl]} ->
         {:ok, List.first(tl)}
-      error -> error
+
+      error ->
+        error
     end
+  end
+
+  def scan(pattern) do
+    scan(pattern, [], "0")
   end
 
   defp push(cmd, key, list) when is_list(list) do
@@ -277,10 +296,6 @@ defmodule ITKCommon.Redis.Core do
     push(cmd, key, [val])
   end
 
-  defp scan(pattern) do
-    scan(pattern, [], "0")
-  end
-
   defp scan(pattern, prev_data, prev_cursor) do
     case command(["SCAN", String.to_integer(prev_cursor), "MATCH", pattern]) do
       {:ok, [cursor, data]} when cursor != "0" and is_list(data) ->
@@ -290,4 +305,30 @@ defmodule ITKCommon.Redis.Core do
         List.flatten(prev_data)
     end
   end
+
+  defp prepare_mset_args(comm, map) do
+    args =
+      map
+      |> Enum.map(fn {key, value} ->
+        [key, value]
+      end)
+      |> List.flatten()
+
+    comm
+    |> List.wrap()
+    |> Enum.concat(args)
+  end
+
+  def prepare_mget({:ok, []}, _keys), do: {:ok, %{}}
+
+  def prepare_mget({:ok, list}, keys) do
+    map =
+      keys
+      |> Enum.zip(list)
+      |> Enum.into(%{})
+
+    {:ok, map}
+  end
+
+  def prepare_mget(other, _keys), do: other
 end
