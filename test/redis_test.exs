@@ -72,6 +72,67 @@ defmodule ITKCommon.RedisTest do
     end
   end
 
+  describe "hmset/2" do
+    test "set multiple keys" do
+      key = random_key()
+      fields = [field1, field2] = [random_key(), random_key()]
+
+      map = %{
+        field1 => "val1",
+        field2 => "val2"
+      }
+
+      Redis.hmset(key, map)
+      assert {:ok, ^map} = Redis.hmget_as_map(key, fields)
+
+      del(key)
+    end
+  end
+
+  describe "hmget/2" do
+    test "Get multiple values from redis" do
+      key = random_key()
+      fields = [field1, field2] = [random_key(), random_key()]
+
+      Redis.hset(key, field1, "val1")
+      Redis.hset(key, field2, "val2")
+
+      assert Redis.hmget(key, fields) == {:ok, ["val1", "val2"]}
+      del(key)
+    end
+
+    test "Get values for non existing fields" do
+      key = random_key()
+      fields = [random_key(), random_key()]
+
+      assert Redis.hmget(key, fields) == {:ok, [nil, nil]}
+
+      del(key)
+    end
+  end
+
+  describe "hmget_as_map/2" do
+    test "Get multiple values from redis" do
+      key = random_key()
+      fields = [field1, field2] = [random_key(), random_key()]
+
+      Redis.hset(key, field1, "val1")
+      Redis.hset(key, field2, "val2")
+
+      assert Redis.hmget_as_map(key, fields) == {:ok, %{field1 => "val1", field2 => "val2"}}
+      del(key)
+    end
+
+    test "Get values for non existing fields" do
+      key = random_key()
+      fields = [field1, field2] = [random_key(), random_key()]
+
+      assert Redis.hmget_as_map(key, fields) == {:ok, %{field1 => nil, field2 => nil}}
+
+      del(key)
+    end
+  end
+
   describe "hsetnx/3" do
     test "New set cant override a previous set" do
       key = random_key()
@@ -107,7 +168,7 @@ defmodule ITKCommon.RedisTest do
       }
 
       Redis.mset(map)
-      assert {:ok, map} = Redis.mget_as_map(keys)
+      assert {:ok, ^map} = Redis.mget_as_map(keys)
 
       del(keys)
     end
