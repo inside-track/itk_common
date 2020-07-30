@@ -20,3 +20,5 @@ config :itk_queue,
   env: :test
 
 config :itk_queue, ITK.QueueMiddleware.TransactionMetadata, enabled: false
+
+config :itk_common, :ip_locator, data_directory: "test/support"
