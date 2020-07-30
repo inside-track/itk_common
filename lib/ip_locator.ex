@@ -184,7 +184,7 @@ defmodule ITKCommon.IpLocator do
     |> from_redis()
     |> case do
       {:ok, []} ->
-        Task.start(__MODULE__, :load, [])
+        ITKCommon.do_async(__MODULE__, :load, [])
         {:ok, @allow}
 
       {:ok, [range]} ->
