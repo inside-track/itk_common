@@ -35,9 +35,10 @@ defmodule ITKCommon.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:jason, "~> 1.0"},
+      {:jason, "~> 1.0"},
       # {:httpoison, "~> 1.0"},
       # {:uuid, "~> 1.1"},
+      {:csv, "~> 2.3.0"},
       {:timex, "~> 3.1"},
       {:poolboy, "~> 1.5"},
       {:redix, "~> 0.9.0"},
