@@ -86,7 +86,6 @@ defmodule ITKCommon.UserSessionsTest do
       token = UserSessions.generate_token(uuid)
       student = %{user_role: "student", uuid: uuid, organization_id: 1}
 
-
       Redis.set(
         token,
         Jason.encode!(%{
