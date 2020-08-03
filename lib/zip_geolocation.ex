@@ -99,14 +99,15 @@ defmodule ITKCommon.ZipGeolocation do
     end
   end
 
-  defp load_path do
-    sub_dir =
-      :itk
-      |> Application.get_env(__MODULE__, Keyword.new())
-      |> Keyword.get(:load_path, "geolocation")
-
+  defp data_directory do
     priv_dir = :itk_common |> :code.priv_dir() |> to_string
 
-    Path.join([priv_dir, sub_dir, "zipcode.json.gz"])
+    :itk_common
+    |> Application.get_env(:ip_locator, [])
+    |> Keyword.get(:data_directory, priv_dir)
+  end
+
+  defp load_path do
+    Path.join([data_directory(), "zip_geolocation", "zipcode.json.gz"])
   end
 end

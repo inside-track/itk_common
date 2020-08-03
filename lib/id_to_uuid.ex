@@ -10,9 +10,13 @@ defmodule ITKCommon.Id_To_Uuid do
         &ITKCommon.Id_To_Uuid.error_func/1
       ])
 
-    quote do
+    quote generated: true do
       def get(id) when is_integer(id) do
         ITKCommon.Id_To_Uuid.get(__MODULE__, id, unquote(mod), unquote(func))
+      end
+
+      def configured? do
+        unquote(mod) != ITKCommon.Id_To_Uuid
       end
     end
   end
