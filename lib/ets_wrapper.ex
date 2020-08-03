@@ -9,7 +9,7 @@ defmodule ITKCommon.EtsWrapper do
         ITKCommon.EtsWrapper.set(__MODULE__, key, func.())
       end
 
-      def set(name, key, value) do
+      def set(key, value) do
         ITKCommon.EtsWrapper.set(__MODULE__, key, value)
       end
 
