@@ -1,5 +1,5 @@
 defmodule ITKCommon.Utils.AccessTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   import ITKCommon.Utils.Access
 

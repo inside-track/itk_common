@@ -1,5 +1,5 @@
 defmodule ITKCommon.HeaderParserTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias ITKCommon.HeaderParser
   alias ITKCommon.IpLocator

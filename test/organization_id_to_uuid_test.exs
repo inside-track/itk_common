@@ -1,5 +1,5 @@
 defmodule ITKCommon.Organization_Id_To_UuidTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias ITKCommon.Organization_Id_To_Uuid
 
