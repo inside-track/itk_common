@@ -5,6 +5,7 @@ defmodule ITKCommon do
   use Application
 
   alias ITKCommon.ScheduledTasks.Publisher
+  alias ITKCommon.TaskSupervisor
 
   defdelegate schedule_task(routing_key, payload, publish_at), to: Publisher, as: :publish_create
 
@@ -15,6 +16,9 @@ defmodule ITKCommon do
   defdelegate unschedule_task(routing_key, identifier),
     to: Publisher,
     as: :publish_delete
+
+  defdelegate do_async(fun), to: TaskSupervisor
+  defdelegate do_async(mod, func_name, args), to: TaskSupervisor
 
   @doc false
   def start(_type, _args) do
@@ -51,13 +55,18 @@ defmodule ITKCommon do
   defp children do
     []
     |> append(:redis, ITKCommon.Redis.Pool)
+    |> append({Task.Supervisor, name: ITKCommon.TaskSupervisor})
     |> Enum.reverse()
   end
 
   defp append(list, key, mod) do
     case Application.get_env(:itk_common, key) do
       nil -> list
-      _ -> [mod | list]
+      _ -> append(list, mod)
     end
+  end
+
+  defp append(list, mod) do
+    [mod | list]
   end
 end

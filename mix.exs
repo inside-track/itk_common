@@ -35,13 +35,16 @@ defmodule ITKCommon.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:jason, "~> 1.0"},
+      {:jason, "~> 1.0"},
       # {:httpoison, "~> 1.0"},
-      # {:uuid, "~> 1.1"},
+      {:uuid, "~> 1.1"},
+      {:plug, "> 0.0.0"},
+      {:csv, "~> 2.3.0"},
       {:timex, "~> 3.1"},
       {:poolboy, "~> 1.5"},
       {:redix, "~> 0.9.0"},
       {:ex_doc, "~> 0.19.0", only: :dev},
+      {:remote_ip, git: "https://github.com/inside-track/remote_ip.git", branch: "master"},
       {:credo, git: "https://github.com/rrrene/credo.git", only: [:dev, :test]},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
       {:itk_queue, "~> 0.11.10"}
