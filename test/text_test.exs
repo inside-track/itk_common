@@ -1,5 +1,5 @@
 defmodule ITKCommon.Utils.TextTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias ITKCommon.Utils.Text
 

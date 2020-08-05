@@ -3,6 +3,26 @@ defmodule ITKCommon.EtsWrapper do
   Module to map an a arbitrary key to value and store in ets table
   """
 
+  defmacro __using__([]) do
+    quote generated: true do
+      def set(key, func) when is_function(func, 0) do
+        ITKCommon.EtsWrapper.set(__MODULE__, key, func.())
+      end
+
+      def set(key, value) do
+        ITKCommon.EtsWrapper.set(__MODULE__, key, value)
+      end
+
+      def get(key, func) when is_function(func, 0) do
+        ITKCommon.EtsWrapper.get(__MODULE__, key, func)
+      end
+
+      def get(key) do
+        ITKCommon.EtsWrapper.get(__MODULE__, key)
+      end
+    end
+  end
+
   def set(name, key, func) when is_atom(name) and is_function(func, 0) do
     do_set(name, key, func.())
   end

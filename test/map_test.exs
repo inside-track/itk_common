@@ -1,5 +1,5 @@
 defmodule ITKCommon.Utils.MapTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ITKCommon.Utils
 
   describe "stringify_keys/1" do
