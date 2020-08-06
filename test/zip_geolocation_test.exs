@@ -1,5 +1,5 @@
 defmodule ITKCommon.ZipGeolocationTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias ITKCommon.ZipGeolocation
   alias ITKCommon.Redis
@@ -13,7 +13,7 @@ defmodule ITKCommon.ZipGeolocationTest do
   describe "get/1" do
     test "Get geopoint" do
       assert Redis.hget(ZipGeolocation.key(), "loaded") == {:ok, nil}
-
+      Process.sleep(50)
       assert ZipGeolocation.get("00601") == {:ok, "18.180555, -66.749961"}
 
       assert ZipGeolocation.get("006020000") == {:ok, "18.361945, -67.175597"}
@@ -22,6 +22,7 @@ defmodule ITKCommon.ZipGeolocationTest do
     test "sets loaded flag" do
       assert Redis.hget(ZipGeolocation.key(), "loaded") == {:ok, nil}
       ZipGeolocation.load(%{})
+      Process.sleep(50)
       assert Redis.hget(ZipGeolocation.key(), "loaded") == {:ok, "true"}
     end
 
