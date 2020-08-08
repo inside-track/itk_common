@@ -2,8 +2,6 @@ defmodule ITKCommon.Events do
   @moduledoc """
   Handles interactions with event tracking.
   """
-
-  alias ITKCommon.Events.Publisher
   alias ITKCommon.UserSessions
 
   @from_session [
@@ -48,7 +46,7 @@ defmodule ITKCommon.Events do
       |> prepare(event_data)
       |> Map.put("timestamp", ITKCommon.Utils.Text.iso8601_now())
 
-    ITKQueue.publish("event.capture", payload)
+    ITKQueue.publish("interaction.create", payload)
   end
 
   def capture(_payload, _any), do: :ok

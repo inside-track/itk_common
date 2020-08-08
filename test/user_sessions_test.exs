@@ -147,7 +147,6 @@ defmodule ITKCommon.UserSessionsTest do
       Redis.rpush(key, "expired")
 
       token = UserSessions.start(student)
-      Process.sleep(50)
       assert {:ok, [token]} == Redis.get_list(key)
     end
   end
@@ -444,11 +443,9 @@ defmodule ITKCommon.UserSessionsTest do
 
       token = UserSessions.start(student)
       key = UserSessions.auth_list_key(student.uuid)
-      Process.sleep(50)
       Redis.rpush(key, "expired")
 
       {:ok, _} = UserSessions.terminate(token)
-      Process.sleep(50)
 
       assert {:ok, []} = Redis.get_list(key)
     end

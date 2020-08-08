@@ -1,5 +1,5 @@
 defmodule ITKCommon.EventsTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
   alias ITKCommon.Events
   alias ITKCommon.UserSessions
@@ -27,7 +27,7 @@ defmodule ITKCommon.EventsTest do
 
       assert_received [
         :publish,
-        "event.capture",
+        "interaction.create",
         %{
           "name" => "test_event",
           "user_uuid" => "xyz",
@@ -64,7 +64,7 @@ defmodule ITKCommon.EventsTest do
 
       assert_received [
         :publish,
-        "event.capture",
+        "interaction.create",
         %{
           "user_uuid" => "xyz",
           "user_role" => "student",
@@ -89,7 +89,7 @@ defmodule ITKCommon.EventsTest do
 
       assert_received [
         :publish,
-        "event.capture",
+        "interaction.create",
         %{
           "user_uuid" => "xyz",
           "user_role" => "student",
