@@ -115,13 +115,16 @@ defmodule ITKCommon.Redis.Core do
     |> command()
     |> case do
       {:ok, list} ->
-        map = list
-        |> Enum.chunk_every(2) 
-        |> Enum.map(fn [a, b] -> {a, b} end)
-        |> Map.new()
+        map =
+          list
+          |> Enum.chunk_every(2)
+          |> Enum.map(fn [a, b] -> {a, b} end)
+          |> Map.new()
 
         {:ok, map}
-      error -> error
+
+      error ->
+        error
     end
   end
 

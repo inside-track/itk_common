@@ -77,10 +77,10 @@ defmodule ITKCommon.RedisCacheTest do
       Example.redis_set(key3, "test_value")
 
       assert %{
-        key1 => "test_value",
-        key2 => "test_value",
-        key3 => "test_value"
-      } == Example.redis_get_all()
+               key1 => "test_value",
+               key2 => "test_value",
+               key3 => "test_value"
+             } == Example.redis_get_all()
     end
   end
 

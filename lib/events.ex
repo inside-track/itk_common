@@ -19,7 +19,7 @@ defmodule ITKCommon.Events do
   @doc """
   Captures an event.
   """
-  @spec capture(event_data :: map, session_data :: any) :: :ok
+  @spec capture(event_data :: map, user_or_session_or_token :: any) :: :ok
   def capture(event_data = %{}, token) when is_binary(token) or is_nil(token) do
     token
     |> UserSessions.get()
@@ -29,7 +29,6 @@ defmodule ITKCommon.Events do
     end
   end
 
-  @spec capture(event_data :: map, user :: map) :: :ok
   def capture(event_data = %{}, user = %{uuid: _}) do
     user
     |> UserSessions.latest_session()
@@ -39,7 +38,6 @@ defmodule ITKCommon.Events do
     end
   end
 
-  @spec capture(event_data :: map, session_data :: map) :: :ok
   def capture(event_data = %{}, session_data = %{}) when is_map(session_data) do
     payload =
       session_data
