@@ -23,6 +23,7 @@ defmodule ITKCommon.Redis.Core do
       defdelegate hmset(key, map), to: ITKCommon.Redis.Core
       defdelegate hset(key, map), to: ITKCommon.Redis.Core
       defdelegate hset(key, field, value), to: ITKCommon.Redis.Core
+      defdelegate hset_with_reply(key, field, value), to: ITKCommon.Redis.Core
       defdelegate hsetnx(key, field, value), to: ITKCommon.Redis.Core
       defdelegate keys(pattern), to: ITKCommon.Redis.Core
       defdelegate last(key), to: ITKCommon.Redis.Core
@@ -167,6 +168,10 @@ defmodule ITKCommon.Redis.Core do
   Sets field in the hash stored at key to value.
   """
   def hset(key, field, value) do
+    noreply_command(["HSET", key, field, value])
+  end
+
+  def hset_with_reply(key, field, value) do
     command(["HSET", key, field, value])
   end
 
