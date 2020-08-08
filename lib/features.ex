@@ -1,4 +1,7 @@
 defmodule ITKCommon.Features do
+  @moduledoc """
+  Module to normalize and encapsulate feature flag functionality
+  """
   use ITKCommon.RedisCache
 
   alias ITKCommon.Utils.Text
