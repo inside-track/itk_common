@@ -38,10 +38,10 @@ defmodule ITKCommon.ZipGeolocation do
     data = data || load_data()
 
     Enum.each(data, fn {zipcode, geopoint} ->
-      {:ok, _} = Redis.hsetnx(@key, zipcode, geopoint)
+      Redis.hsetnx(@key, zipcode, geopoint)
     end)
 
-    {:ok, _} = Redis.hset(@key, "loaded", "true")
+    Redis.hset(@key, "loaded", "true")
 
     :ok
   end

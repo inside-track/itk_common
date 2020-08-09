@@ -17,11 +17,13 @@ defmodule ITKCommon.Redis.Core do
       defdelegate getset(key, value), to: ITKCommon.Redis.Core
       defdelegate hdel(key, field), to: ITKCommon.Redis.Core
       defdelegate hget(key, field), to: ITKCommon.Redis.Core
+      defdelegate hget_all(key), to: ITKCommon.Redis.Core
       defdelegate hmget(key, fields), to: ITKCommon.Redis.Core
       defdelegate hmget_as_map(key, fields), to: ITKCommon.Redis.Core
       defdelegate hmset(key, map), to: ITKCommon.Redis.Core
       defdelegate hset(key, map), to: ITKCommon.Redis.Core
       defdelegate hset(key, field, value), to: ITKCommon.Redis.Core
+      defdelegate hset_with_reply(key, field, value), to: ITKCommon.Redis.Core
       defdelegate hsetnx(key, field, value), to: ITKCommon.Redis.Core
       defdelegate keys(pattern), to: ITKCommon.Redis.Core
       defdelegate last(key), to: ITKCommon.Redis.Core
@@ -33,6 +35,7 @@ defmodule ITKCommon.Redis.Core do
       defdelegate mget_as_map(keys), to: ITKCommon.Redis.Core
       defdelegate mset(map), to: ITKCommon.Redis.Core
       defdelegate multi(commands), to: ITKCommon.Redis.Core
+      defdelegate noreply_command(command), to: ITKCommon.Redis.Core
       defdelegate prepend(key, data), to: ITKCommon.Redis.Core
       defdelegate rpush(key, data), to: ITKCommon.Redis.Core
       defdelegate rpushx(key, data), to: ITKCommon.Redis.Core
@@ -108,6 +111,24 @@ defmodule ITKCommon.Redis.Core do
     |> command()
   end
 
+  def hget_all(key) do
+    ["HGETALL", key]
+    |> command()
+    |> case do
+      {:ok, list} ->
+        map =
+          list
+          |> Enum.chunk_every(2)
+          |> Enum.map(fn [a, b] -> {a, b} end)
+          |> Map.new()
+
+        {:ok, map}
+
+      error ->
+        error
+    end
+  end
+
   def hmget_as_map(key, fields) do
     key
     |> hmget(fields)
@@ -147,6 +168,10 @@ defmodule ITKCommon.Redis.Core do
   Sets field in the hash stored at key to value.
   """
   def hset(key, field, value) do
+    noreply_command(["HSET", key, field, value])
+  end
+
+  def hset_with_reply(key, field, value) do
     command(["HSET", key, field, value])
   end
 
@@ -268,6 +293,13 @@ defmodule ITKCommon.Redis.Core do
   """
   def command(command) do
     :poolboy.transaction(:redis_pool, &Redix.command(&1, command))
+  end
+
+  @doc """
+  Sends a command to Redis.
+  """
+  def noreply_command(command) do
+    :poolboy.transaction(:redis_pool, &Redix.noreply_command(&1, command))
   end
 
   def multi(commands) do

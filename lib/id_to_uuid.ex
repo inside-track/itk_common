@@ -26,7 +26,7 @@ defmodule ITKCommon.Id_To_Uuid do
   end
 
   def get(client_mod, id, mod, func) when is_integer(id) do
-    ITKCommon.EtsWrapper.get(client_mod, id, fn ->
+    ITKCommon.EtsCache.get(client_mod, id, fn ->
       mod
       |> apply(func, [id])
       |> case do
