@@ -43,6 +43,26 @@ defmodule ITKCommon.RedisCacheTest do
     end
   end
 
+  describe "redis_set/1" do
+    test "stores multiple values" do
+      key1 = UUID.uuid4()
+      key2 = UUID.uuid4()
+      key3 = UUID.uuid4()
+
+      Example.redis_set(%{
+        key1 => "test_value",
+        key2 => "test_value",
+        key3 => "test_value"
+      })
+
+      assert %{
+               key1 => "test_value",
+               key2 => "test_value",
+               key3 => "test_value"
+             } == Example.redis_get_all()
+    end
+  end
+
   describe "redis_set/2" do
     test "stores a value" do
       key = UUID.uuid4()

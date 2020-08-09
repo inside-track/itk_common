@@ -24,6 +24,10 @@ defmodule ITKCommon.RedisCache do
         ITKCommon.RedisCache.set(@redis_cache_key, key, value)
       end
 
+      def redis_set(map) when is_map(map) do
+        ITKCommon.RedisCache.set(@redis_cache_key, map)
+      end
+
       def redis_get(key, func) when is_function(func, 0) do
         ITKCommon.RedisCache.get(@redis_cache_key, key, func)
       end
@@ -48,6 +52,10 @@ defmodule ITKCommon.RedisCache do
         @redis_cache_key
       end
     end
+  end
+
+  def set(mod_or_name, map) when is_map(map) do
+    do_set(mod_or_name, map)
   end
 
   def set(mod_or_name, key, func) when is_function(func, 0) do
@@ -93,20 +101,24 @@ defmodule ITKCommon.RedisCache do
       end
 
     if is_binary(value) do
-      do_set(mod_or_name, key, value)
-    else
-      value
+      do_set(mod_or_name, %{key => value})
     end
+
+    value
   end
 
   defp from_source({:ok, value}, _mod_or_name, _key, _func) do
     value
   end
 
-  defp do_set(mod_or_name, key, value) do
+  defp do_set(mod_or_name, map) do
     name = cache_name(mod_or_name)
-    Redis.noreply_command(["HSET", name, key, value])
+    Redis.hset(name, map)
+    map
+  end
 
+  defp do_set(mod_or_name, key, value) do
+    do_set(mod_or_name, %{key => value})
     value
   end
 
