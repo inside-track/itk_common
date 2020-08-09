@@ -23,7 +23,6 @@ defmodule ITKCommon.Redis.Core do
       defdelegate hmset(key, map), to: ITKCommon.Redis.Core
       defdelegate hset(key, map), to: ITKCommon.Redis.Core
       defdelegate hset(key, field, value), to: ITKCommon.Redis.Core
-      defdelegate hset_with_reply(key, field, value), to: ITKCommon.Redis.Core
       defdelegate hsetnx(key, field, value), to: ITKCommon.Redis.Core
       defdelegate keys(pattern), to: ITKCommon.Redis.Core
       defdelegate last(key), to: ITKCommon.Redis.Core
@@ -171,14 +170,10 @@ defmodule ITKCommon.Redis.Core do
     noreply_command(["HSET", key, field, value])
   end
 
-  def hset_with_reply(key, field, value) do
-    command(["HSET", key, field, value])
-  end
-
   def hmset(key, map) do
     ["HMSET", key]
     |> prepare_mset_args(map)
-    |> command()
+    |> noreply_command()
   end
 
   @doc """
