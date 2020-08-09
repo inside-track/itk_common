@@ -39,9 +39,7 @@ defmodule ITKCommon.UserSessions do
           }
           | nil
 
-  @type student :: %{uuid: String.t(), user_role: String.t(), organization_id: integer}
-  @type coach_or_admin :: %{uuid: String.t(), user_role: String.t()}
-  @type user :: coach_or_admin | student | nil
+  @type user :: map
   @typep not_found :: {:error, :not_found, String.t()}
   @typep session_success :: {:ok, map}
   @typep field_tracker :: {session :: session, old_session :: session, values :: map}
