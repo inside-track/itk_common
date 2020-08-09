@@ -10,7 +10,9 @@ defmodule ITKCommon.HeaderParser do
 
   def init(options), do: options
 
-  def call(conn, []) do
+  def call(conn), do: call(conn, [])
+
+  def call(conn, _opts) do
     conn
     |> add_itk_meta()
     |> add_header_value("app-version", "app_version")
