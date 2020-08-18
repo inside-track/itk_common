@@ -79,4 +79,19 @@ defmodule ITKCommon.Utils.Text do
         nil
     end
   end
+
+  def hypen(atom) when is_atom(atom) do
+    case Atom.to_string(atom) do
+      "Elixir." <> rest -> hypen(rest)
+      word -> hypen(word)
+    end
+  end
+
+  def hypen(word) when is_binary(word) do
+    word
+    |> String.replace(~r/([A-Z]+)([A-Z][a-z])/, "\\1-\\2")
+    |> String.replace(~r/([a-z\d])([A-Z])/, "\\1-\\2")
+    |> String.replace(~r/_/, "-")
+    |> String.downcase()
+  end
 end

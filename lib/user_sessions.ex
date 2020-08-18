@@ -23,25 +23,23 @@ defmodule ITKCommon.UserSessions do
   alias ITKCommon.Redis
   alias ITKCommon.Utils
 
-  @typep session ::
-           %__MODULE__{
-             uuid: String.t() | nil,
-             role: String.t() | nil,
-             organization_uuid: String.t() | nil,
-             token: String.t() | nil,
-             app_version: String.t() | nil,
-             os_version: String.t() | nil,
-             device_type: String.t() | nil,
-             session_id: String.t() | nil,
-             timestamp: String.t() | nil,
-             ip: String.t() | nil,
-             ip_location: String.t() | nil
-           }
-           | nil
+  @type session ::
+          %__MODULE__{
+            uuid: String.t() | nil,
+            role: String.t() | nil,
+            organization_uuid: String.t() | nil,
+            token: String.t() | nil,
+            app_version: String.t() | nil,
+            os_version: String.t() | nil,
+            device_type: String.t() | nil,
+            session_id: String.t() | nil,
+            timestamp: String.t() | nil,
+            ip: String.t() | nil,
+            ip_location: String.t() | nil
+          }
+          | nil
 
-  @typep student :: %{uuid: String.t(), user_role: String.t(), organization_id: integer}
-  @typep coach_or_admin :: %{uuid: String.t(), user_role: String.t()}
-  @typep user :: coach_or_admin | student | nil
+  @type user :: map
   @typep not_found :: {:error, :not_found, String.t()}
   @typep session_success :: {:ok, map}
   @typep field_tracker :: {session :: session, old_session :: session, values :: map}
@@ -121,7 +119,10 @@ defmodule ITKCommon.UserSessions do
     |> auth_list_key
     |> Redis.delete()
 
-    Logger.info("Deauthorized User - UUID: #{user_uuid}")
+    if Mix.env() in [:staging, :production] do
+      Logger.info("Deauthorized User - UUID: #{user_uuid}")
+    end
+
     :ok
   end
 
