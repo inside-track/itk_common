@@ -1,4 +1,4 @@
-defmodule ITKCommon.Id_To_Uuid do
+defmodule ITKCommon.IdToUuid do
   @moduledoc """
   Module to extend capability to map an ids to uuids
   """
@@ -6,17 +6,17 @@ defmodule ITKCommon.Id_To_Uuid do
   defmacro __using__([]) do
     [mod, func] =
       Application.get_env(:itk_common, __CALLER__.module, [
-        ITKCommon.Id_To_Uuid,
-        &ITKCommon.Id_To_Uuid.error_func/1
+        ITKCommon.IdToUuid,
+        &ITKCommon.IdToUuid.error_func/1
       ])
 
     quote generated: true do
       def get(id) when is_integer(id) do
-        ITKCommon.Id_To_Uuid.get(__MODULE__, id, unquote(mod), unquote(func))
+        ITKCommon.IdToUuid.get(__MODULE__, id, unquote(mod), unquote(func))
       end
 
       def configured? do
-        unquote(mod) != ITKCommon.Id_To_Uuid
+        unquote(mod) != ITKCommon.IdToUuid
       end
     end
   end
