@@ -6,6 +6,7 @@ defmodule ITKCommon.ZipGeolocationTest do
 
   setup do
     ZipGeolocation.clear()
+
     on_exit(fn ->
       ZipGeolocation.clear()
     end)
