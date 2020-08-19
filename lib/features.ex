@@ -6,10 +6,11 @@ defmodule ITKCommon.Features do
 
   alias ITKCommon.Utils.Text
 
+  @off_value "off"
+  @off_values [@off_value, nil]
+
   def on?(name) do
-    name
-    |> redis_get()
-    |> is_binary()
+    not off?(name)
   end
 
   def on!(name) do
@@ -17,47 +18,57 @@ defmodule ITKCommon.Features do
   end
 
   def off?(name) do
-    not on?(name)
+    name
+    |> redis_get()
+    |> (&(&1 in @off_values)).()
   end
 
   def off!(name) do
+    redis_set(name, @off_value)
+  end
+
+  def del(name) do
     redis_del(name)
   end
 
-  def set(key, value) do
-    redis_set(key, value)
+  def set(_name, @off_value) do
+    raise "#{@off_value} is not an allowed value."
+  end
+
+  def set(name, value) do
+    redis_set(name, value)
   end
 
   def all do
     redis_get_all()
   end
 
-  def eq?(key, other) do
-    compare(key, other, [:eq])
+  def eq?(name, other) do
+    compare(name, other, [:eq])
   end
 
-  def gt?(key, other) do
-    compare(key, other, [:gt])
+  def gt?(name, other) do
+    compare(name, other, [:gt])
   end
 
-  def lt?(key, other) do
-    compare(key, other, [:lt])
+  def lt?(name, other) do
+    compare(name, other, [:lt])
   end
 
-  def gte?(key, other) do
-    compare(key, other, [:eq, :gt])
+  def gte?(name, other) do
+    compare(name, other, [:eq, :gt])
   end
 
-  def lte?(key, other) do
-    compare(key, other, [:eq, :lt])
+  def lte?(name, other) do
+    compare(name, other, [:eq, :lt])
   end
 
-  defp compare(key, other, ops) do
+  defp compare(name, other, ops) do
     other = to_string(other)
-    value = redis_get(key)
+    value = redis_get(name)
 
     cond do
-      is_nil(value) ->
+      value in @off_values ->
         false
 
       :eq in ops and value == other ->

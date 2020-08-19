@@ -152,7 +152,7 @@ defmodule ITKCommon.UserSessions do
   end
 
   def get("public") do
-    {:error, :not_found, "Session was not found."}
+    get(nil)
   end
 
   def get(token) do

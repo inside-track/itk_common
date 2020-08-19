@@ -1,23 +1,23 @@
-defmodule ITKCommon.Organization_Id_To_UuidTest do
+defmodule ITKCommon.OrganizationIdToUuidTest do
   use ExUnit.Case, async: true
 
-  alias ITKCommon.Organization_Id_To_Uuid
+  alias ITKCommon.OrganizationIdToUuid
 
   describe "get/1" do
     test "returns requested uuid" do
       assert "11111111-1111-1111-1111-111111111111" ==
-               Organization_Id_To_Uuid.get(1)
+               OrganizationIdToUuid.get(1)
     end
 
     test "caches the uuid" do
-      Organization_Id_To_Uuid.get(2)
+      OrganizationIdToUuid.get(2)
 
       assert [{2, "22222222-2222-2222-2222-222222222222"} | _] =
-               :ets.lookup(Organization_Id_To_Uuid, 2)
+               :ets.lookup(OrganizationIdToUuid, 2)
     end
 
     test "return nil when no match found" do
-      assert is_nil(Organization_Id_To_Uuid.get(0))
+      assert is_nil(OrganizationIdToUuid.get(0))
     end
   end
 

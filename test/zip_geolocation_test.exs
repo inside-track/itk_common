@@ -5,6 +5,8 @@ defmodule ITKCommon.ZipGeolocationTest do
   alias ITKCommon.Redis
 
   setup do
+    ZipGeolocation.clear()
+
     on_exit(fn ->
       ZipGeolocation.clear()
     end)

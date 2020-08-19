@@ -3,5 +3,13 @@ defmodule ITKCommon.Organization_Id_To_Uuid do
   Maps a organization id to uuid
   """
 
-  use ITKCommon.Id_To_Uuid
+  use ITKCommon.IdToUuid
+end
+
+defmodule ITKCommon.OrganizationIdToUuid do
+  @moduledoc """
+  Maps a organization id to uuid
+  """
+
+  use ITKCommon.IdToUuid
 end
