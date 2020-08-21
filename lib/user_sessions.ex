@@ -19,7 +19,7 @@ defmodule ITKCommon.UserSessions do
     :ip_location
   ]
 
-  alias ITKCommon.Organization_Id_To_Uuid
+  alias ITKCommon.OrganizationIdToUuid
   alias ITKCommon.Redis
   alias ITKCommon.Utils
 
@@ -302,9 +302,9 @@ defmodule ITKCommon.UserSessions do
   defp add_organization_uuid(session = %{organization_uuid: nil, role: "student"}, %{
          organization_id: org_id
        }) do
-    if Organization_Id_To_Uuid.configured?() do
+    if OrganizationIdToUuid.configured?() do
       org_id
-      |> Organization_Id_To_Uuid.get()
+      |> OrganizationIdToUuid.get()
       |> case do
         nil ->
           session
