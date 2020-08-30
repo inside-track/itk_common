@@ -4,9 +4,9 @@ defmodule ITKCommon do
   """
   use Application
 
+  alias ITKCommon.Interactions
   alias ITKCommon.ScheduledTasks.Publisher
   alias ITKCommon.TaskSupervisor
-  alias ITKCommon.Interactions
 
   defdelegate schedule_task(routing_key, payload, publish_at), to: Publisher, as: :publish_create
 
