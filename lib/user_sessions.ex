@@ -119,7 +119,7 @@ defmodule ITKCommon.UserSessions do
     |> auth_list_key
     |> Redis.delete()
 
-    if Mix.env() in [:staging, :production] do
+    if Mix.env() in [:prod, :staging, :production] do
       Logger.info("Deauthorized User - UUID: #{user_uuid}")
     end
 

@@ -36,7 +36,7 @@ defmodule ITKCommon.MixProject do
   defp deps do
     [
       {:jason, "~> 1.0"},
-      # {:httpoison, "~> 1.0"},
+      {:ecto, "> 3.0.0"},
       {:uuid, "~> 1.1"},
       {:plug, "> 0.0.0"},
       {:csv, "~> 2.3.0"},

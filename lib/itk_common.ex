@@ -4,6 +4,7 @@ defmodule ITKCommon do
   """
   use Application
 
+  alias ITKCommon.Interactions
   alias ITKCommon.ScheduledTasks.Publisher
   alias ITKCommon.TaskSupervisor
 
@@ -19,6 +20,9 @@ defmodule ITKCommon do
 
   defdelegate do_async(fun), to: TaskSupervisor
   defdelegate do_async(mod, func_name, args), to: TaskSupervisor
+
+  defdelegate capture_event(data, user_or_session_or_token), to: Interactions
+  defdelegate capture_experiment(data, user_or_session_or_token), to: Interactions
 
   @doc false
   def start(_type, _args) do
