@@ -1,7 +1,7 @@
-defmodule ITKCommon.EventsTest do
+defmodule ITKCommon.InterationsTest do
   use ExUnit.Case
 
-  alias ITKCommon.Events
+  alias ITKCommon.Interactions
   alias ITKCommon.UserSessions
 
   describe "capture/2" do
@@ -23,24 +23,27 @@ defmodule ITKCommon.EventsTest do
         "arbitrary_data_field" => "hello"
       }
 
-      assert :ok = Events.capture(event_data, token)
+      assert :ok = Interactions.capture("event", event_data, token)
 
       assert_received [
         :publish,
         "interaction.create",
         %{
-          "name" => "test_event",
-          "user_uuid" => "xyz",
-          "user_role" => "student",
-          "organization_uuid" => "abc",
-          "session_id" => _,
-          "arbitrary_data_field" => "hello",
-          "app_version" => "app-1.1",
-          "os_version" => "os-1.1",
-          "device_type" => "device-Awesome",
-          "ip" => "1.1.1.1",
-          "ip_location" => "US",
-          "timestamp" => _
+          "type" => "event",
+          "payload" => %{
+            "name" => "test_event",
+            "user_uuid" => "xyz",
+            "user_role" => "student",
+            "organization_uuid" => "abc",
+            "session_id" => _,
+            "arbitrary_data_field" => "hello",
+            "app_version" => "app-1.1",
+            "os_version" => "os-1.1",
+            "device_type" => "device-Awesome",
+            "ip" => "1.1.1.1",
+            "ip_location" => "US",
+            "timestamp" => _
+          }
         }
       ]
 
@@ -60,18 +63,21 @@ defmodule ITKCommon.EventsTest do
         "arbitrary_data_field" => "hello"
       }
 
-      assert :ok = Events.capture(event_data, session_data)
+      assert :ok = Interactions.capture("event", event_data, session_data)
 
       assert_received [
         :publish,
         "interaction.create",
         %{
-          "user_uuid" => "xyz",
-          "user_role" => "student",
-          "organization_uuid" => "abc",
-          "session_id" => "session_id",
-          "arbitrary_data_field" => "hello",
-          "timestamp" => _
+          "type" => "event",
+          "payload" => %{
+            "user_uuid" => "xyz",
+            "user_role" => "student",
+            "organization_uuid" => "abc",
+            "session_id" => "session_id",
+            "arbitrary_data_field" => "hello",
+            "timestamp" => _
+          }
         }
       ]
     end
@@ -85,18 +91,21 @@ defmodule ITKCommon.EventsTest do
         "arbitrary_data_field" => "hello"
       }
 
-      assert :ok = Events.capture(event_data, user)
+      assert :ok = Interactions.capture("event", event_data, user)
 
       assert_received [
         :publish,
         "interaction.create",
         %{
-          "user_uuid" => "xyz",
-          "user_role" => "student",
-          "organization_uuid" => "abc",
-          "session_id" => _,
-          "arbitrary_data_field" => "hello",
-          "timestamp" => _
+          "type" => "event",
+          "payload" => %{
+            "user_uuid" => "xyz",
+            "user_role" => "student",
+            "organization_uuid" => "abc",
+            "session_id" => _,
+            "arbitrary_data_field" => "hello",
+            "timestamp" => _
+          }
         }
       ]
 
