@@ -124,6 +124,8 @@ defmodule ITKCommon.HeaderParser do
     String.replace(token, "\"", "")
   end
 
+  defp parse_auth_header(["Bearer " <> token]), do: token
+
   defp parse_auth_header(_), do: :error
 
   defp add_itk_meta(conn = %{req_headers: headers}) do
