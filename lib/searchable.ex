@@ -83,7 +83,7 @@ defmodule ITKCommon.Searchable do
     apply_filter(field, value, query)
   end
 
-  defp apply_filter(field, %{"lt" => nil}, query) do
+  defp apply_filter(_field, %{"lt" => nil}, query) do
     where(query, [x], false)
   end
 
@@ -91,7 +91,7 @@ defmodule ITKCommon.Searchable do
     where(query, [x], field(x, ^field) < ^value)
   end
 
-  defp apply_filter(field, %{"lte" => nil}, query) do
+  defp apply_filter(_field, %{"lte" => nil}, query) do
     where(query, [x], false)
   end
 
@@ -99,7 +99,7 @@ defmodule ITKCommon.Searchable do
     where(query, [x], field(x, ^field) <= ^value)
   end
 
-  defp apply_filter(field, %{"gt" => nil}, query) do
+  defp apply_filter(_field, %{"gt" => nil}, query) do
     where(query, [x], false)
   end
 
@@ -107,7 +107,7 @@ defmodule ITKCommon.Searchable do
     where(query, [x], field(x, ^field) > ^value)
   end
 
-  defp apply_filter(field, %{"gte" => nil}, query) do
+  defp apply_filter(_field, %{"gte" => nil}, query) do
     where(query, [x], false)
   end
 
@@ -137,10 +137,6 @@ defmodule ITKCommon.Searchable do
 
   defp apply_filter(_field, %{"not_in" => _}, _query) do
     raise "Use `not_in` only when checking for membership in a list"
-  end
-
-  defp apply_filter(field, %{"is" => true}, query) do
-    apply_filter(field, true, query)
   end
 
   defp apply_filter(field, %{"is" => true}, query) do
