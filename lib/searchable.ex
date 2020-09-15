@@ -23,7 +23,7 @@ defmodule ITKCommon.Searchable do
       ecto_schema: mod
     }
     |> add_options(options)
-    |> apply_filters(filters, allowable)
+    |> apply_filters(filters, allowable, mod)
     |> apply_sorting(allowable)
     |> apply_pagination()
   end
@@ -48,7 +48,7 @@ defmodule ITKCommon.Searchable do
     |> search(repo)
   end
 
-  defp apply_filters(struct, filters, allowable) do
+  defp apply_filters(struct, filters, allowable, mod) do
     {query, filters} =
       Enum.reduce(filters, {struct.queryable, %{}}, fn {field, value}, {query, filters} ->
         case validate(field, allowable) do
@@ -57,7 +57,7 @@ defmodule ITKCommon.Searchable do
 
           field ->
             {
-              apply_filter(field, value, query),
+              apply_filter(field, value, query, mod),
               Map.put(filters, field, value)
             }
         end
@@ -66,13 +66,17 @@ defmodule ITKCommon.Searchable do
     %{struct | queryable: query, filters: filters}
   end
 
-  defp apply_filter(field, value, query) when not is_map(value) do
-    value =
-      value
-      |> List.wrap()
-      |> Enum.reject(&is_nil/1)
+  defp apply_filter(field, value, query, mod) do
+    cond do
+      is_map(value) ->
+        apply_filter(field, value, query)
 
-    where(query, [x], field(x, ^field) in ^value)
+      is_binary(value) and mod.__schema__(:type, field) == :string ->
+        apply_filter(field, %{"like" => value}, query)
+
+      true ->
+        apply_filter(field, %{"eq" => value}, query)
+    end
   end
 
   defp apply_filter(field, %{"eq" => nil}, query) do
@@ -80,7 +84,28 @@ defmodule ITKCommon.Searchable do
   end
 
   defp apply_filter(field, %{"eq" => value}, query) do
-    apply_filter(field, value, query)
+    value =
+      value
+      |> List.wrap()
+      |> Enum.reject(&is_nil/1)
+
+    apply_filter(field, %{"in" => value}, query)
+  end
+
+  defp apply_filter(field, %{"contains" => value}, query) do
+    apply_filter(field, %{"like" => value}, query)
+  end
+
+  defp apply_filter(field, %{"like" => value}, query) do
+    apply_like(field, "%", value, "%", query)
+  end
+
+  defp apply_filter(field, %{"starts_with" => value}, query) do
+    apply_like(field, "", value, "%", query)
+  end
+
+  defp apply_filter(field, %{"ends_with" => value}, query) do
+    apply_like(field, "%", value, "", query)
   end
 
   defp apply_filter(_field, %{"lt" => nil}, query) do
@@ -124,7 +149,7 @@ defmodule ITKCommon.Searchable do
   end
 
   defp apply_filter(field, %{"in" => value}, query) when is_list(value) do
-    apply_filter(field, value, query)
+    where(query, [x], field(x, ^field) in ^value)
   end
 
   defp apply_filter(_field, %{"in" => _}, _query) do
@@ -140,11 +165,11 @@ defmodule ITKCommon.Searchable do
   end
 
   defp apply_filter(field, %{"is" => true}, query) do
-    apply_filter(field, true, query)
+    where(query, [x], field(x, ^field) == true)
   end
 
   defp apply_filter(field, %{"is" => false}, query) do
-    apply_filter(field, false, query)
+    where(query, [x], field(x, ^field) == false)
   end
 
   defp apply_filter(field, %{"is" => nil}, query) do
@@ -169,6 +194,19 @@ defmodule ITKCommon.Searchable do
 
   defp apply_filter(_field, %{"is_not" => _}, _query) do
     raise "Use `is_not` only when comparing nil, false or true"
+  end
+
+  defp apply_filter(field, value, query) do
+    apply_filter(field, %{"eq" => value}, query)
+  end
+
+  defp apply_like(field, a, value, z, query) when is_binary(value) do
+    like_text = a <> value <> z
+    where(query, [x], ilike(field(x, ^field), ^like_text))
+  end
+
+  defp apply_like(_field, _, _value, _, query) do
+    where(query, [x], false)
   end
 
   defp add_options(struct, []) do
