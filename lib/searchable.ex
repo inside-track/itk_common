@@ -29,7 +29,7 @@ defmodule ITKCommon.Searchable do
   end
 
   def search(searchable = %__MODULE__{status: :pending}, repo) do
-    result = repo.all(searchable)
+    result = repo.all(searchable.queryable)
 
     %{
       searchable
@@ -73,6 +73,106 @@ defmodule ITKCommon.Searchable do
       |> Enum.reject(&is_nil/1)
 
     where(query, [x], field(x, ^field) in ^value)
+  end
+
+  defp apply_filter(field, %{"eq" => nil}, query) do
+    apply_filter(field, %{"is" => nil}, query)
+  end
+
+  defp apply_filter(field, %{"eq" => value}, query) do
+    apply_filter(field, value, query)
+  end
+
+  defp apply_filter(field, %{"lt" => nil}, query) do
+    where(query, [x], false)
+  end
+
+  defp apply_filter(field, %{"lt" => value}, query) do
+    where(query, [x], field(x, ^field) < ^value)
+  end
+
+  defp apply_filter(field, %{"lte" => nil}, query) do
+    where(query, [x], false)
+  end
+
+  defp apply_filter(field, %{"lte" => value}, query) do
+    where(query, [x], field(x, ^field) <= ^value)
+  end
+
+  defp apply_filter(field, %{"gt" => nil}, query) do
+    where(query, [x], false)
+  end
+
+  defp apply_filter(field, %{"gt" => value}, query) do
+    where(query, [x], field(x, ^field) > ^value)
+  end
+
+  defp apply_filter(field, %{"gte" => nil}, query) do
+    where(query, [x], false)
+  end
+
+  defp apply_filter(field, %{"gte" => value}, query) do
+    where(query, [x], field(x, ^field) >= ^value)
+  end
+
+  defp apply_filter(field, %{"not" => nil}, query) do
+    apply_filter(field, %{"is_not" => nil}, query)
+  end
+
+  defp apply_filter(field, %{"not" => value}, query) do
+    where(query, [x], field(x, ^field) != ^value)
+  end
+
+  defp apply_filter(field, %{"in" => value}, query) when is_list(value) do
+    apply_filter(field, value, query)
+  end
+
+  defp apply_filter(_field, %{"in" => _}, _query) do
+    raise "Use `in` only when checking for membership in a list"
+  end
+
+  defp apply_filter(field, %{"not_in" => value}, query) when is_list(value) do
+    where(query, [x], field(x, ^field) not in ^value)
+  end
+
+  defp apply_filter(_field, %{"not_in" => _}, _query) do
+    raise "Use `not_in` only when checking for membership in a list"
+  end
+
+  defp apply_filter(field, %{"is" => true}, query) do
+    apply_filter(field, true, query)
+  end
+
+  defp apply_filter(field, %{"is" => true}, query) do
+    apply_filter(field, true, query)
+  end
+
+  defp apply_filter(field, %{"is" => false}, query) do
+    apply_filter(field, false, query)
+  end
+
+  defp apply_filter(field, %{"is" => nil}, query) do
+    where(query, [x], is_nil(field(x, ^field)))
+  end
+
+  defp apply_filter(_field, %{"is" => _}, _query) do
+    raise "Use `is` only when comparing nil, false or true"
+  end
+
+  defp apply_filter(field, %{"is_not" => true}, query) do
+    where(query, [x], is_nil(field(x, ^field)) or field(x, ^field) == false)
+  end
+
+  defp apply_filter(field, %{"is_not" => false}, query) do
+    where(query, [x], is_nil(field(x, ^field)) or field(x, ^field) == true)
+  end
+
+  defp apply_filter(field, %{"is_not" => nil}, query) do
+    where(query, [x], not is_nil(field(x, ^field)))
+  end
+
+  defp apply_filter(_field, %{"is_not" => _}, _query) do
+    raise "Use `is_not` only when comparing nil, false or true"
   end
 
   defp add_options(struct, []) do
