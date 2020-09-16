@@ -267,7 +267,8 @@ defmodule ITKCommon.Searchable do
         struct
 
       field ->
-        query = order_by(struct.queryable, [x], [{^struct.sort_order, ^field}])
+        order = Map.get(struct, :sort_order, :asc)
+        query = order_by(struct.queryable, [x], [{^order, ^field}])
 
         %{struct | queryable: query}
     end
