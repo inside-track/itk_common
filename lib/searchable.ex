@@ -4,7 +4,18 @@ defmodule ITKCommon.Searchable do
   """
   import Ecto.Query
 
-  defstruct result: [],
+  @type t :: %__MODULE__{
+          page: integer,
+          status: atom,
+          queryable: Ecto.Queryable.t() | nil,
+          filters: nil,
+          per_page: integer | nil,
+          sort_field: atom | nil,
+          sort_order: atom | nil,
+          ecto_schema: Ecto.Queryable.t() | nil
+        }
+
+  defstruct items: [],
             page: 1,
             status: :pending,
             queryable: nil,
@@ -14,6 +25,7 @@ defmodule ITKCommon.Searchable do
             sort_order: nil,
             ecto_schema: nil
 
+  @spec build(queryable :: Ecto.Queryable.t(), filters :: list(map) | map, option :: list) :: t()
   def build(queryable, filters, options \\ []) do
     mod = first_binding(queryable)
     allowable = fields(mod)
@@ -28,12 +40,13 @@ defmodule ITKCommon.Searchable do
     |> apply_pagination()
   end
 
+  @spec search(searchable :: t(), repo :: atom) :: t
   def search(searchable = %__MODULE__{status: :pending}, repo) do
     result = repo.all(searchable.queryable)
 
     %{
       searchable
-      | result: result,
+      | items: result,
         status: :ok
     }
   end
@@ -42,13 +55,13 @@ defmodule ITKCommon.Searchable do
     search(queryable, filters, repo, [])
   end
 
-  def search(searchable, filters, repo, options) when is_map(filters) and is_list(options) do
+  def search(searchable, filters, repo, options) do
     searchable
     |> build(filters, options)
     |> search(repo)
   end
 
-  defp apply_filters(struct, filters, allowable, mod) do
+  defp apply_filters(struct, filters, allowable, mod) when is_map(filters) do
     {query, filters} =
       Enum.reduce(filters, {struct.queryable, %{}}, fn {field, value}, {query, filters} ->
         case validate(field, allowable) do
@@ -64,6 +77,20 @@ defmodule ITKCommon.Searchable do
       end)
 
     %{struct | queryable: query, filters: filters}
+  end
+
+  defp apply_filters(struct, filters, allowable, mod) when is_list(filters) do
+    filters =
+      Enum.reduce(filters, %{}, fn filter, acc ->
+        field =
+          filter
+          |> Map.keys()
+          |> List.first()
+
+        Map.put(acc, field, filter[field])
+      end)
+
+    apply_filters(struct, filters, allowable, mod)
   end
 
   defp apply_filter(field, value, query, mod) do
