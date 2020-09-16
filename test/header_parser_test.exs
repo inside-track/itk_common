@@ -101,6 +101,37 @@ defmodule ITKCommon.HeaderParserTest do
                "ip_location" => "INVALID"
              } = Thread.to_map()
     end
+
+    test "sets auth header - Bearer" do
+      conn = Conn.put_req_header(build_conn(), "authorization", "Bearer abc123")
+
+      HeaderParser.call(conn)
+
+      assert %{
+               "access_token" => "abc123"
+             } = Thread.to_map()
+    end
+
+    test "sets auth header - Token" do
+      conn = Conn.put_req_header(build_conn(), "authorization", "Token token=abc123")
+
+      HeaderParser.call(conn)
+
+      assert %{
+               "access_token" => "abc123"
+             } = Thread.to_map()
+    end
+
+    test "sets auth header - Basic" do
+      conn =
+        Conn.put_req_header(build_conn(), "authorization", "Basic aW5zaWRldHJhY2s6cGFzc3dvcmQ=")
+
+      HeaderParser.call(conn)
+
+      assert %{
+               "credentials" => ["insidetrack", "password"]
+             } = Thread.to_map()
+    end
   end
 
   defp build_conn do

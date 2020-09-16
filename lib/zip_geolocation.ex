@@ -3,13 +3,11 @@ defmodule ITKCommon.ZipGeolocation do
   Module to handling zipcode to geopoint (latitude, longitude) mapping
   """
 
-  alias ITKCommon.Redis
+  use ITKCommon.RedisCache
 
   @type error :: {:error, String.t()}
   @type success_geopoint :: {:ok, String.t()}
   @type success :: :ok
-
-  @key "zip-geolocation-data"
 
   @doc """
   Get geolocation point by zipcode
@@ -26,7 +24,7 @@ defmodule ITKCommon.ZipGeolocation do
   Key where the data is stored as hash
   """
   def key do
-    @key
+    cache_name()
   end
 
   @doc """
@@ -38,19 +36,19 @@ defmodule ITKCommon.ZipGeolocation do
     data = data || load_data()
 
     Enum.each(data, fn {zipcode, geopoint} ->
-      Redis.hsetnx(@key, zipcode, geopoint)
+      redis_set(zipcode, geopoint)
     end)
 
-    Redis.hset(@key, "loaded", "true")
+    redis_set("loaded", "true")
 
     :ok
   end
 
   def clear do
-    Redis.delete(@key)
+    redis_clear()
   end
 
-  defp loaded?, do: Redis.hget(@key, "loaded") == {:ok, "true"}
+  defp loaded?, do: redis_get("loaded") == "true"
 
   defp get_geopoint(truncated_zip) do
     if loaded?() do
@@ -61,11 +59,12 @@ defmodule ITKCommon.ZipGeolocation do
   end
 
   defp get_from_cache(truncated_zip) do
-    with {:ok, geopoint} <- Redis.hget(@key, truncated_zip),
-         false <- is_nil(geopoint) do
-      {:ok, geopoint}
-    else
-      true -> {:error, "No geopoint match for this zipcode."}
+    case redis_get(truncated_zip) do
+      nil ->
+        {:error, "No geopoint match for this zipcode."}
+
+      geopoint ->
+        {:ok, geopoint}
     end
   end
 
