@@ -60,6 +60,7 @@ defmodule ITKCommon do
     []
     |> append(:redis, ITKCommon.Redis.Pool)
     |> append({Task.Supervisor, name: ITKCommon.TaskSupervisor})
+    |> append(ITKCommon.SOCToCIP)
     |> Enum.reverse()
   end
 
