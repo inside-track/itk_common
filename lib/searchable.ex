@@ -99,7 +99,7 @@ defmodule ITKCommon.Searchable do
         apply_filter(field, value, query)
 
       is_binary(value) and mod.__schema__(:type, field) == :string ->
-        apply_filter(field, %{"like" => value}, query)
+        apply_filter(field, %{"fuzzy" => value}, query)
 
       true ->
         apply_filter(field, %{"eq" => value}, query)
@@ -121,6 +121,20 @@ defmodule ITKCommon.Searchable do
 
   defp apply_filter(field, %{"contains" => value}, query) do
     apply_filter(field, %{"like" => value}, query)
+  end
+
+  defp apply_filter(field, %{"fuzzy" => value}, query) when is_binary(value) do
+    regex =
+      value
+      |> String.split(~r/\s+/, trim: true)
+      |> Enum.reject(fn x -> String.length(x) < 3 end)
+      |> Enum.join("|")
+
+    where(query, [x], fragment("? ~* ?", field(x, ^field), ^regex))
+  end
+
+  defp apply_filter(field, %{"fuzzy" => value}, query) do
+    apply_filter(field, %{"eq" => value}, query)
   end
 
   defp apply_filter(field, %{"like" => value}, query) do
