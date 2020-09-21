@@ -36,8 +36,8 @@ defmodule ITKCommon.SearchableTest do
                  "age" => 30
                })
 
-      assert inspect(query) =~ ~r/fragment\("\? ~\* \?", b0\.first_name, \^"grady"\)/
-      assert inspect(query) =~ ~r/fragment\("\? ~\* \?", b0\.last_name, \^"griffin"\)/
+      assert inspect(query) =~ ~r/ilike\(b0.first_name, \^"%grady%"\)/
+      assert inspect(query) =~ ~r/ilike\(b0.last_name, \^"%griffin%"\)/
       assert inspect(query) =~ ~r/b0.start_date in \^\[#DateTime<2017-07-14 02:40:00Z>\]/
       assert inspect(query) =~ ~r/b0.age in \^\[30\]/
     end
@@ -196,8 +196,8 @@ defmodule ITKCommon.SearchableTest do
                  page: 2
                )
 
-      assert inspect(query) =~ ~r/fragment\("\? ~\* \?", b0\.first_name, \^"grady"\)/
-      assert inspect(query) =~ ~r/fragment\("\? ~\* \?", b0\.last_name, \^"griffin"\)/
+      assert inspect(query) =~ ~r/ilike\(b0.first_name, \^"%grady%"\)/
+      assert inspect(query) =~ ~r/ilike\(b0.last_name, \^"%griffin%"\)/
       assert inspect(query) =~ ~r/order_by: \[desc: \w{2}.last_name\]/
       assert inspect(query) =~ ~r/limit: \^25/
       assert inspect(query) =~ ~r/offset: \^25/
