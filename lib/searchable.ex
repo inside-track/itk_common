@@ -99,7 +99,7 @@ defmodule ITKCommon.Searchable do
         apply_filter(field, value, query)
 
       is_binary(value) and mod.__schema__(:type, field) == :string ->
-        apply_filter(field, %{"fuzzy" => value}, query)
+        apply_filter(field, %{"like" => value}, query)
 
       true ->
         apply_filter(field, %{"eq" => value}, query)
