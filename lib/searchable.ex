@@ -28,7 +28,9 @@ defmodule ITKCommon.Searchable do
   @spec build(queryable :: Ecto.Queryable.t(), filters :: list(map) | map, option :: list) :: t()
   def build(queryable, filters, options \\ []) do
     mod = first_binding(queryable)
-    allowable = fields(mod)
+    {only, options} = Keyword.pop(options, :only)
+    {except, options} = Keyword.pop(options, :except)
+    allowable = fields(mod, only, except)
 
     %__MODULE__{
       queryable: queryable,
@@ -285,6 +287,10 @@ defmodule ITKCommon.Searchable do
     |> add_options(tl)
   end
 
+  defp add_options(struct, [_hd | tl]) do
+    add_options(struct, tl)
+  end
+
   defp apply_pagination(struct = %{per_page: per_page}) when is_integer(per_page) do
     offset = (struct.page - 1) * per_page
 
@@ -315,10 +321,42 @@ defmodule ITKCommon.Searchable do
     end
   end
 
-  defp fields(mod) do
+  defp fields(mod, nil, nil) do
     fields = mod.__schema__(:fields)
 
     {Enum.map(fields, &to_string/1), fields}
+  end
+
+  defp fields(mod, only, nil) do
+    do_fields(mod, only, fn a, b -> a in b end)
+  end
+
+  defp fields(mod, nil, except) do
+    do_fields(mod, except, fn a, b -> a not in b end)
+  end
+
+  defp fields(_, _, _) do
+    raise "Setting both `only` and `except` options is not allowed"
+  end
+
+  defp do_fields(mod, list, func) do
+    {strings, atoms} = fields(mod, nil, nil)
+
+    list =
+      list
+      |> List.wrap()
+      |> Enum.map(&to_string/1)
+      |> MapSet.new()
+
+    strings
+    |> Enum.zip(atoms)
+    |> Enum.reduce({[], []}, fn {str, atm}, {strs, atms} ->
+      if func.(str, list) do
+        {[str | strs], [atm | atms]}
+      else
+        {strs, atms}
+      end
+    end)
   end
 
   defp first_binding(queryable) when is_atom(queryable) do
