@@ -3,6 +3,7 @@ defmodule ITKCommon.InterationsTest do
 
   alias ITKCommon.Interactions
   alias ITKCommon.UserSessions
+  alias ITKCommon.Thread
 
   describe "capture/2" do
     test "publishes an event from token" do
@@ -110,6 +111,43 @@ defmodule ITKCommon.InterationsTest do
       ]
 
       UserSessions.terminate_all(user)
+    end
+
+    test "publishes an event with unregistered user" do
+      Thread.put("source_application", "mcd")
+      Thread.put("app_version", "app-1.1")
+      Thread.put("os_version", "os-1.1")
+      Thread.put("device_type", "device-Awesome")
+      Thread.put("ip", "1.1.1.1")
+      Thread.put("ip_location", "US")
+
+      event_data = %{
+        "name" => "test_event",
+        "arbitrary_data_field" => "hello"
+      }
+
+      assert :ok = Interactions.capture("event", event_data, "public")
+
+      assert_received [
+        :publish,
+        "interaction.create",
+        %{
+          "type" => "event",
+          "payload" => %{
+            "name" => "test_event",
+            "user_uuid" => "guest",
+            "user_role" => "student",
+            "arbitrary_data_field" => "hello",
+            "app_version" => "app-1.1",
+            "os_version" => "os-1.1",
+            "device_type" => "device-Awesome",
+            "ip" => "1.1.1.1",
+            "ip_location" => "US",
+            "timestamp" => _,
+            "source_application" => "mcd"
+          }
+        }
+      ]
     end
   end
 end

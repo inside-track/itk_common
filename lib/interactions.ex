@@ -2,6 +2,7 @@ defmodule ITKCommon.Interactions do
   @moduledoc """
   Handles interaction tracking.
   """
+  alias ITKCommon.Thread
   alias ITKCommon.UserSessions
 
   @types ~w(event experiment)
@@ -14,7 +15,8 @@ defmodule ITKCommon.Interactions do
     "os_version",
     "organization_uuid",
     "ip",
-    "ip_location"
+    "ip_location",
+    "source_application"
   ]
 
   @doc """
@@ -37,12 +39,22 @@ defmodule ITKCommon.Interactions do
   Captures an interaction.
   """
   @spec capture(type :: String.t(), data :: map, user_or_session_or_token :: any) :: :ok
-  def capture(type, interaction_data = %{}, token) when is_binary(token) or is_nil(token) do
+  def capture(type, interaction_data = %{}, token) when is_nil(token) or token == "public" do
+    session_data =
+      Map.merge(
+        Thread.to_map(),
+        %{"role" => "student", "uuid" => "guest"}
+      )
+
+    capture(type, interaction_data, session_data)
+  end
+
+  def capture(type, interaction_data = %{}, token) when is_binary(token) do
     token
     |> UserSessions.get()
     |> case do
       {:ok, session_data} -> capture(type, interaction_data, session_data)
-      _ -> capture(type, interaction_data, %{})
+      _ -> :ok
     end
   end
 
@@ -51,7 +63,7 @@ defmodule ITKCommon.Interactions do
     |> UserSessions.latest_session()
     |> case do
       {:ok, session_data} -> capture(type, interaction_data, session_data)
-      _ -> capture(type, interaction_data, %{})
+      _ -> :ok
     end
   end
 
