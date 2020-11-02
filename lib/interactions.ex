@@ -2,8 +2,8 @@ defmodule ITKCommon.Interactions do
   @moduledoc """
   Handles interaction tracking.
   """
-  alias ITKCommon.UserSessions
   alias ITKCommon.Thread
+  alias ITKCommon.UserSessions
 
   @types ~w(event experiment)
   @from_session [
