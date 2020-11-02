@@ -50,14 +50,14 @@ defmodule ITKCommon.UserSessions do
   @last_active_prefix "last_active_by_user_uuid:"
 
   @accessible MapSet.new([
-    "organization_uuid",
-    "app_version",
-    "os_version",
-    "device_type",
-    "session_id",
-    "ip",
-    "ip_location"
-  ])
+                "organization_uuid",
+                "app_version",
+                "os_version",
+                "device_type",
+                "session_id",
+                "ip",
+                "ip_location"
+              ])
 
   @doc """
   start an ITK Session for `user` with `token`
