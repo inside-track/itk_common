@@ -49,15 +49,15 @@ defmodule ITKCommon.UserSessions do
   @auth_list_key_prefix "authentication:cache:tokens_by_user_uuid:"
   @last_active_prefix "last_active_by_user_uuid:"
 
-  @accessible [
-    "organization_uuid",
-    "app_version",
-    "os_version",
-    "device_type",
-    "session_id",
-    "ip",
-    "ip_location"
-  ]
+  @accessible MapSet.new([
+                "organization_uuid",
+                "app_version",
+                "os_version",
+                "device_type",
+                "session_id",
+                "ip",
+                "ip_location"
+              ])
 
   @doc """
   start an ITK Session for `user` with `token`
@@ -427,10 +427,14 @@ defmodule ITKCommon.UserSessions do
 
   defp to_session(_), do: nil
 
-  defp clean_metadata(metadata) do
-    metadata
-    |> Map.take(@accessible)
-    |> Utils.Map.atomize_keys()
+  defp clean_metadata(data) do
+    Enum.reduce(data, %{}, fn {k, v}, acc ->
+      if not is_nil(v) and k in @accessible do
+        Map.put(acc, String.to_atom(k), v)
+      else
+        acc
+      end
+    end)
   end
 
   defp add_to_authlist(session = %{uuid: uuid}, token) do
