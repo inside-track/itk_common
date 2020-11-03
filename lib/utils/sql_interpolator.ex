@@ -28,7 +28,7 @@ defmodule ITKCommon.Utils.SqlInterpolator do
 
   defp interpolate(v = %DateTime{}) do
     v
-    |> Timex.format("{YYYY}-{0M}-{0D} {0h24}:{m}:{s}{ss}")
+    |> Timex.format!("{YYYY}-{0M}-{0D} {0h24}:{m}:{s}{ss}")
     |> interpolate()
   end
 
