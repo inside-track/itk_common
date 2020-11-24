@@ -10,12 +10,25 @@ defmodule ITKCommon.CIPToSOC do
   @spec get(cip_codes :: String.t() | list(String.t())) :: list(String.t())
   def get(cip_codes) do
     cip_codes
+    |> get_careers()
+    |> Enum.map(&elem(&1, 0))
+    |> Enum.uniq()
+  end
+
+  @spec get_careers(cip_codes :: String.t() | list(String.t())) ::
+          list({String.t(), String.t(), String.t()})
+  def get_careers(cip_codes) do
+    cip_codes
+    |> do_get()
+    |> Enum.uniq()
+  end
+
+  defp do_get(cip_codes) do
+    cip_codes
     |> List.wrap()
-    |> Enum.map(fn code ->
+    |> Enum.flat_map(fn code ->
       Agent.get(__MODULE__, &Map.get(&1, code, []))
     end)
-    |> List.flatten()
-    |> Enum.uniq()
   end
 
   defp load_data do
@@ -25,9 +38,10 @@ defmodule ITKCommon.CIPToSOC do
     |> Enum.reduce(%{}, fn row, map ->
       soc_code = Map.get(row, "SOC2010Code")
       cip_code = Map.get(row, "CIP2010Code")
+      soc_title = Map.get(row, "SOC2010Title")
 
       list = Map.get(map, cip_code, [])
-      Map.put(map, cip_code, [soc_code | list])
+      Map.put(map, cip_code, [{soc_code, soc_title} | list])
     end)
   end
 

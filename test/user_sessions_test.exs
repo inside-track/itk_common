@@ -64,6 +64,23 @@ defmodule ITKCommon.UserSessionsTest do
              } = Jason.decode!(session)
     end
 
+    test "stores a new session for a content_manager" do
+      uuid = UUID.uuid4()
+      coach = %{user_role: "coach", itk_coach_uuid: uuid}
+
+      token = UserSessions.start(coach)
+      {:ok, session} = Redis.get(token)
+
+      assert %{
+               "uuid" => ^uuid,
+               "role" => "coach",
+               "organization_uuid" => nil,
+               "token" => ^token,
+               "session_id" => _,
+               "timestamp" => _
+             } = Jason.decode!(session)
+    end
+
     test "stores a new session for a admin" do
       uuid = UUID.uuid4()
       admin = %{user_role: "admin", uuid: uuid}

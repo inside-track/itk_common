@@ -75,7 +75,13 @@ defmodule ITKCommon.UserSessions do
     start(user, token, %{})
   end
 
-  def start(user = %{uuid: uuid}, token, metadata = %{}) do
+  def start(user, token, metadata = %{}) do
+    uuid =
+      case user do
+        %{itk_coach_uuid: uuid} -> uuid
+        %{uuid: uuid} -> uuid
+      end
+
     token = token || generate_token(uuid)
 
     %__MODULE__{
