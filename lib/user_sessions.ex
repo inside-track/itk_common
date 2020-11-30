@@ -308,7 +308,7 @@ defmodule ITKCommon.UserSessions do
   defp add_organization_uuid(session = %{organization_uuid: nil, role: role}, %{
          organization_id: org_id
        })
-       when role in ~w(student guest) do
+       when role in ~w(student guest) and is_integer(org_id) do
     if OrganizationIdToUuid.configured?() do
       org_id
       |> OrganizationIdToUuid.get()
