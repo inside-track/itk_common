@@ -305,9 +305,10 @@ defmodule ITKCommon.UserSessions do
     Map.merge(session, metadata)
   end
 
-  defp add_organization_uuid(session = %{organization_uuid: nil, role: "student"}, %{
+  defp add_organization_uuid(session = %{organization_uuid: nil, role: role}, %{
          organization_id: org_id
-       }) do
+       })
+       when role in ~w(student guest) do
     if OrganizationIdToUuid.configured?() do
       org_id
       |> OrganizationIdToUuid.get()
