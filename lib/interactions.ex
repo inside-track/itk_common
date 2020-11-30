@@ -85,5 +85,6 @@ defmodule ITKCommon.Interactions do
     |> Map.put("user_uuid", session_data["uuid"])
     |> Map.put("user_role", session_data["role"])
     |> Map.merge(interaction_data)
+    |> Map.put_new("session_id", Ecto.UUID.generate())
   end
 end
