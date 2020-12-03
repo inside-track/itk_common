@@ -8,14 +8,26 @@ defmodule ITKCommon.SOCToCIP do
   end
 
   @spec get(soc_codes :: String.t() | list(String.t())) :: list(String.t())
-  def get(soc_codes) do
+  def get(cip_codes) do
+    cip_codes
+    |> get_majors()
+    |> Enum.map(&elem(&1, 0))
+    |> Enum.uniq()
+  end
+
+  @spec get_majors(soc_codes :: String.t() | list(String.t())) :: list({String.t(), String.t()})
+  def get_majors(soc_codes) do
+    soc_codes
+    |> do_get()
+    |> Enum.uniq()
+  end
+
+  defp do_get(soc_codes) do
     soc_codes
     |> List.wrap()
-    |> Enum.map(fn code ->
+    |> Enum.flat_map(fn code ->
       Agent.get(__MODULE__, &Map.get(&1, code, []))
     end)
-    |> List.flatten()
-    |> Enum.uniq()
   end
 
   defp load_data do
@@ -25,9 +37,11 @@ defmodule ITKCommon.SOCToCIP do
     |> Enum.reduce(%{}, fn row, map ->
       soc_code = Map.get(row, "SOC2010Code")
       cip_code = Map.get(row, "CIP2010Code")
+      cip_title = Map.get(row, "CIP2010Title")
+      cip_definition = Map.get(row, "CIP2010Definition")
 
       list = Map.get(map, soc_code, [])
-      Map.put(map, soc_code, [cip_code | list])
+      Map.put(map, soc_code, [{cip_code, cip_title, cip_definition} | list])
     end)
   end
 

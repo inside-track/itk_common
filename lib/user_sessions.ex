@@ -75,7 +75,13 @@ defmodule ITKCommon.UserSessions do
     start(user, token, %{})
   end
 
-  def start(user = %{uuid: uuid}, token, metadata = %{}) do
+  def start(user, token, metadata = %{}) do
+    uuid =
+      case user do
+        %{itk_coach_uuid: uuid} -> uuid
+        %{uuid: uuid} -> uuid
+      end
+
     token = token || generate_token(uuid)
 
     %__MODULE__{
@@ -299,9 +305,10 @@ defmodule ITKCommon.UserSessions do
     Map.merge(session, metadata)
   end
 
-  defp add_organization_uuid(session = %{organization_uuid: nil, role: "student"}, %{
+  defp add_organization_uuid(session = %{organization_uuid: nil, role: role}, %{
          organization_id: org_id
-       }) do
+       })
+       when role in ~w(student guest) and is_integer(org_id) do
     if OrganizationIdToUuid.configured?() do
       org_id
       |> OrganizationIdToUuid.get()
