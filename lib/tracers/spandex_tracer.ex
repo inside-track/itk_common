@@ -1,13 +1,10 @@
 defmodule ITKCommon.SpandexTracer do
-  require Spandex.Tracer
+  use Spandex.Tracer, otp_app: :itk_email
+
   defmacro __using__(opts) do
     quote do
-      @otp_app unquote(opts)[:otp_app] || raise "Tracer expects :otp_app to be given"
+      @otp_app unquote(opts)[:otp_app] || raise("Tracer expects :otp_app to be given")
       Spandex.Tracer.__using__(opts)
-
-      #use Spandex.Tracer, otp_app: @appname
-      IO.puts("foo 1")
-      IO.inspect(@otp_app)
 
       defp get_config() do
         config([], @otp_app)
@@ -22,7 +19,7 @@ if Code.ensure_loaded?(Decorator.Define) do
     To resolve name conflict with `Spandex.Decorators`.
     """
 
-    @tracer ITKCommon.Tracers.SpandexTracer
+    @tracer ITKCommon.SpandexTracer
 
     use Decorator.Define, trace: 0, trace: 1
 

@@ -50,7 +50,7 @@ defmodule ITKCommon.MixProject do
       {:itk_queue, "~> 0.12.1"},
       {:spandex, "~> 3.0.2"},
       {:spandex_datadog, "~> 1.0.0"},
-      {:spandex_phoenix, "~> 1.0.4"},
+      {:spandex_phoenix, "~> 1.0.4"}
     ]
   end
 

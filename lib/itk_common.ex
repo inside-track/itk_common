@@ -28,6 +28,13 @@ defmodule ITKCommon do
   def start(_type, _args) do
     opts = [strategy: :rest_for_one, name: ITKCommon.Supervisor]
 
+    ITKCommon.SpandexTracer.configure(
+      disabled?: false,
+      adapter: SpandexDatadog.Adapter,
+      service: Application.fetch_env!(:itk_common, :service_name),
+      env: System.get_env("APPLICATION_ENVIRONMENT") || "dev"
+    )
+
     environment()
     |> children
     |> Supervisor.start_link(opts)
