@@ -47,7 +47,10 @@ defmodule ITKCommon.MixProject do
       {:remote_ip, git: "https://github.com/inside-track/remote_ip.git", branch: "master"},
       {:credo, git: "https://github.com/rrrene/credo.git", only: [:dev, :test]},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
-      {:itk_queue, "~> 0.12.1"}
+      {:itk_queue, "~> 0.12.1"},
+      {:spandex, "~> 3.0.2"},
+      {:spandex_datadog, "~> 1.0.0"},
+      {:spandex_phoenix, "~> 1.0.4"},
     ]
   end
 
