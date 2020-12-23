@@ -26,18 +26,14 @@ defmodule ITKCommon do
 
   @doc false
   def start(_type, _args) do
+    c =
+      if Application.get_env(:itk_common, :core_enabled, true),
+        do: [],
+        else: children(environment())
+
     opts = [strategy: :rest_for_one, name: ITKCommon.Supervisor]
 
-    ITKCommon.SpandexTracer.configure(
-      disabled?: false,
-      adapter: SpandexDatadog.Adapter,
-      service: Application.fetch_env!(:itk_common, :service_name),
-      env: System.get_env("APPLICATION_ENVIRONMENT") || "dev"
-    )
-
-    environment()
-    |> children
-    |> Supervisor.start_link(opts)
+    Supervisor.start_link(c, opts)
   end
 
   def testing? do
