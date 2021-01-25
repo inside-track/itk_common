@@ -117,7 +117,8 @@ defmodule ITKCommon.HeaderParser do
 
   defp parse_auth_header(["Basic " <> hash]) do
     with {:ok, credentials} <- hash |> String.trim("\"") |> Base.decode64() do
-      String.split(credentials, ":")
+      [username | password] = String.split(credentials, ":")
+      [username, Enum.join(password, ":")]
     end
   end
 

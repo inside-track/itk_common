@@ -132,6 +132,21 @@ defmodule ITKCommon.HeaderParserTest do
                "credentials" => ["insidetrack", "password"]
              } = Thread.to_map()
     end
+
+    test "sets auth header - Basic with colons" do
+      conn =
+        Conn.put_req_header(
+          build_conn(),
+          "authorization",
+          "Basic YWRtaW46c3Ryb25nOnBhc3M6d29yZA=="
+        )
+
+      HeaderParser.call(conn)
+
+      assert %{
+               "credentials" => ["admin", "strong:pass:word"]
+             } = Thread.to_map()
+    end
   end
 
   defp build_conn do
