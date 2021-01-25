@@ -38,7 +38,7 @@ defmodule ITKCommon.SearchableTest do
 
       assert inspect(query) =~ ~r/ilike\(b0.first_name, \^"%grady%"\)/
       assert inspect(query) =~ ~r/ilike\(b0.last_name, \^"%griffin%"\)/
-      assert inspect(query) =~ ~r/b0.start_date in \^\[~U\[2017-07-14 02:40:00Z\]\]/
+      assert inspect(query) =~ ~r/b0.start_date in \^\[#DateTime<2017-07-14 02:40:00Z>\]/
       assert inspect(query) =~ ~r/b0.age in \^\[30\]/
     end
 
